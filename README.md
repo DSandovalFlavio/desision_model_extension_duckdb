@@ -13,7 +13,59 @@ Evaluación en [eval/RESULTS.md](eval/RESULTS.md) · plan en [PLAN.md](PLAN.md).
 > **Estado: fase 2.**
 > - Clasificación funcionando: `decision_choose`, `decision_yes_no` y la cláusula `DECIDE`, con lotes multisecuencia, deduplicación y caché LRU.
 > - Los modelos se descargan solos la primera vez, verificados con SHA‑256.
-> - Pendiente: el resto de optimizaciones de [PLAN.md](PLAN.md) y medir con CUDA.
+>
+> **Verificado:** Windows x64 con MSVC 2022, compilación **solo CPU**, cargada en el DuckDB **2.0.0 oficial**.
+>
+> **Aún sin verificar:**
+> - La compilación con **CUDA**.
+> - Linux y macOS (`make release`).
+> - Las pruebas `test/sql/*.test` con el runner de DuckDB.
+>
+> Pendiente también: el resto de optimizaciones de [PLAN.md](PLAN.md).
+
+## Inicio rápido (Windows)
+
+**1. Requisitos (una sola vez)**
+- [Git](https://git-scm.com/download/win).
+- [Visual Studio 2022 Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) con la carga de trabajo **"Desarrollo para el escritorio con C++"**. Incluye MSVC, CMake y Ninja.
+- Para usar la GPU NVIDIA: [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads) 12.x o 13.x. Con GPUs Pascal (GTX 10xx, Quadro P) usa 12.x.
+- [DuckDB CLI **2.0.0**](https://github.com/duckdb/duckdb/releases/tag/v2.0.0) (no la 1.x).
+
+**2. Clonar con los submódulos** (DuckDB v2.0.0, extension-ci-tools y llama.cpp b12521, fijados):
+
+```powershell
+git clone https://github.com/<tu-usuario>/<tu-repo>.git decide
+```
+
+```powershell
+cd decide
+```
+
+```powershell
+git submodule update --init --depth 1
+```
+
+**3. Compilar.** Desde una terminal normal; el script carga solo el entorno de Visual Studio. La primera vez tarda entre 30 y 60 minutos, porque compila DuckDB y llama.cpp.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1 -Cuda -CudaArch 89
+```
+
+- Usa `-CudaArch 89` para RTX 40xx, `86` para RTX 30xx y `75` para RTX 20xx.
+- Sin GPU NVIDIA, quita `-Cuda -CudaArch 89`.
+
+**4. Usar**
+
+```powershell
+duckdb -unsigned
+```
+
+```sql
+LOAD 'build/release/extension/decide/decide.duckdb_extension';
+SELECT decide_version();          -- con CUDA debe listar "CUDA" en backends
+SELECT decide_download();         -- baja onejev-4b (2.7 GB) a ~/.duckdb/decide/models
+SELECT decision_yes_no('Pierde 15 kilos en 7 días sin dieta', '¿Este anuncio infringe las políticas de Google Ads?');
+```
 
 ## Cláusula DECIDE
 
@@ -109,33 +161,33 @@ SELECT decide_clear_cache();
 | `onejev-4b` | 2.7 GB |
 | `onejev-9b` | 5.6 GB |
 
-## Compilar en Windows
+## Detalles de compilación
 
-Requisitos:
-- Visual Studio 2022 Build Tools con el componente "Desarrollo para el escritorio con C++". Incluye CMake y Ninja.
-- Git.
-- Para GPU: CUDA Toolkit 12.x o 13.x.
+- **Script:** `scripts/build_windows.ps1`. Busca Visual Studio 2022 con `vswhere`, carga `vcvars64` y compila DuckDB v2.0.0 junto con la extensión usando Ninja.
+  - Opciones: `-Cuda`, `-CudaArch <sm>`, `-Portable` (sin optimizar para el CPU de la máquina que compila, para repartir el binario a otros equipos), `-Config debug|release` y `-Jobs N`.
+- **Salidas:**
+  - `build/release/extension/decide/decide.duckdb_extension`: la extensión cargable. Necesita DuckDB **2.0.0** exacto, iniciado con `-unsigned`.
+  - `build/release/duckdb.exe`: un DuckDB 2.0.0 compilado aquí. La extensión **no** va incluida y se carga con `LOAD` igual que en el oficial.
+- **Versión:** el build usa la versión exacta `v2.0.0` y descarga extensiones (por ejemplo, `httpfs`) del repositorio oficial. Así la extensión carga en el CLI oficial.
+- **Linux/macOS:** `make release` (o `GEN=ninja make release`). Aún sin probar.
+
+## Reproducir la evaluación (fase 0)
 
 ```powershell
-git submodule update --init --depth 1
+python -m venv .venv
 ```
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1
+.venv\Scripts\pip install llama-cpp-python==0.3.36 jinja2 huggingface_hub onnxruntime tokenizers duckdb numpy
 ```
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1 -Cuda -CudaArch 89
+.venv\Scripts\python eval\download_models.py
 ```
 
-- Usa `-CudaArch` según tu GPU: `89` para RTX 40xx, `86` para RTX 30xx y `75` para RTX 20xx.
-- CUDA 13 ya no soporta GPUs Pascal (GTX 10xx, Quadro P); en esas usa CUDA 12.x o la versión solo CPU.
-
-La compilación genera:
-- `build\release\duckdb.exe`: DuckDB 2.0 con la extensión incluida.
-- `build\release\extension\decide\decide.duckdb_extension`: la extensión cargable. Hace falta DuckDB **2.0.0** exacto e iniciarlo con `-unsigned`.
-
-En Linux/macOS: `make release` (o `GEN=ninja make release`).
+- Descarga `llama-server` b12521 de [las releases de llama.cpp](https://github.com/ggml-org/llama.cpp/releases/tag/b12521) en `tools/llama-b12521-cuda12/`, o pasa `--server`.
+- Después ejecuta `bash eval/run_all.sh` y `python eval/report.py`.
+- El set `eval/data/es_marketing_v1.jsonl` es **sintético** (226 ejemplos de marketing en español). Sus cifras orientan la elección del modelo, pero no sustituyen una evaluación con tus datos.
 
 ## Licencias
 
