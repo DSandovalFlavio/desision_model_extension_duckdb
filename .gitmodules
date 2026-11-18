@@ -1,0 +1,11 @@
+[submodule "extension-ci-tools"]
+	path = extension-ci-tools
+	url = https://github.com/duckdb/extension-ci-tools
+	branch = v2.0-cyanoptera
+[submodule "third_party/llama.cpp"]
+	path = third_party/llama.cpp
+	url = https://github.com/ggml-org/llama.cpp
+[submodule "duckdb"]
+	path = duckdb
+	url = https://github.com/duckdb/duckdb
+	branch = v2.0-cyanoptera

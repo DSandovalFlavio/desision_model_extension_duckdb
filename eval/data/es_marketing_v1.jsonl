@@ -1,0 +1,226 @@
+{"id":"av001","task":"ads_vertical","text":"Tenis Running Hasta 40% Off | Envío Gratis en 24h | Encuentra los modelos más vendidos de la temporada. Cambios sin costo.","label":"moda_retail"}
+{"id":"av002","task":"ads_vertical","text":"Vestidos de Fiesta 2026 | Nueva Colección Online | Tallas de la XS a la XL. Paga a meses sin intereses.","label":"moda_retail"}
+{"id":"av003","task":"ads_vertical","text":"Liquidación de Temporada | Jeans desde $399 | Solo esta semana en todas nuestras sucursales y tienda en línea.","label":"moda_retail"}
+{"id":"av004","task":"ads_vertical","text":"Bolsos de Piel Hechos a Mano | Diseño Mexicano | Regala algo único. Envíos a todo el país.","label":"moda_retail"}
+{"id":"av005","task":"ads_vertical","text":"Lentes de Sol Originales | Ray-Ban, Oakley y más | Compra 100% segura con garantía de autenticidad.","label":"moda_retail"}
+{"id":"av006","task":"ads_vertical","text":"Uniformes Escolares a Buen Precio | Pantalones, Faldas y Suéteres | Pide hoy y recoge en tienda.","label":"moda_retail"}
+{"id":"av007","task":"ads_vertical","text":"Ropa Interior Cómoda para Hombre | Packs de 3 a Precio Especial | Algodón premium que dura más.","label":"moda_retail"}
+{"id":"av008","task":"ads_vertical","text":"Black Friday en Calzado | Botas, Sandalias y Más | Descuentos de hasta el 60% por tiempo limitado.","label":"moda_retail"}
+{"id":"av009","task":"ads_vertical","text":"Relojes para Mujer | Colección Clásica y Deportiva | Envío express y empaque de regalo incluido.","label":"moda_retail"}
+{"id":"av010","task":"ads_vertical","text":"Tienda Oficial de Ropa Deportiva | Leggings, Tops y Sudaderas | Hasta 3 MSI con tarjetas participantes.","label":"moda_retail"}
+{"id":"av011","task":"ads_vertical","text":"Vuelos Baratos a Cancún | Desde $1,299 Viaje Redondo | Compara aerolíneas y reserva en minutos.","label":"viajes"}
+{"id":"av012","task":"ads_vertical","text":"Hoteles Todo Incluido en Punta Cana | Ofertas de Última Hora | Cancelación gratis en la mayoría de habitaciones.","label":"viajes"}
+{"id":"av013","task":"ads_vertical","text":"Paquetes a Europa 2027 | 15 Días, 6 Países | Vuelo + hotel + tours guiados en español.","label":"viajes"}
+{"id":"av014","task":"ads_vertical","text":"Renta de Autos en el Aeropuerto de Madrid | Sin Cargos Ocultos | Recoge tu coche al aterrizar.","label":"viajes"}
+{"id":"av015","task":"ads_vertical","text":"Cruceros por el Caribe | Niños Viajan Gratis | Reserva con solo $500 de anticipo.","label":"viajes"}
+{"id":"av016","task":"ads_vertical","text":"Escapadas de Fin de Semana | Casas Rurales con Encanto | Más de 3.000 alojamientos en toda España.","label":"viajes"}
+{"id":"av017","task":"ads_vertical","text":"Tours en Machu Picchu | Guías Certificados | Incluye tren, entradas y traslados desde Cusco.","label":"viajes"}
+{"id":"av018","task":"ads_vertical","text":"Seguro de Viaje Internacional | Cobertura Médica en el Extranjero | Requisito para tu visa Schengen.","label":"viajes"}
+{"id":"av019","task":"ads_vertical","text":"Hostales en Barcelona desde 18€ | Céntricos y con Desayuno | Reserva sin tarjeta de crédito.","label":"viajes"}
+{"id":"av020","task":"ads_vertical","text":"Viajes de Luna de Miel | Maldivas, Bali y Grecia | Agencia especializada con atención personalizada.","label":"viajes"}
+{"id":"av021","task":"ads_vertical","text":"Tarjeta de Crédito sin Anualidad | Solicítala 100% en Línea | Respuesta en minutos y cashback en tus compras.","label":"finanzas"}
+{"id":"av022","task":"ads_vertical","text":"Préstamos Personales hasta $300,000 | Tasa Fija Anual | Simula tu crédito y conoce tu pago mensual.","label":"finanzas"}
+{"id":"av023","task":"ads_vertical","text":"Cuenta de Ahorro con Rendimiento Diario | Invierte desde $100 | Regulada y protegida por el IPAB.","label":"finanzas"}
+{"id":"av024","task":"ads_vertical","text":"Seguro de Auto desde $450 al Mes | Cotiza en 2 Minutos | Compara las mejores aseguradoras.","label":"finanzas"}
+{"id":"av025","task":"ads_vertical","text":"Abre tu Cuenta Digital Gratis | Sin Comisiones ni Saldo Mínimo | Tarjeta de débito con envío a domicilio.","label":"finanzas"}
+{"id":"av026","task":"ads_vertical","text":"Fondos de Inversión | Asesoría Patrimonial Personalizada | Planifica tu retiro con expertos.","label":"finanzas"}
+{"id":"av027","task":"ads_vertical","text":"Seguro de Vida a Término | Protege a tu Familia | Primas accesibles y contratación en línea.","label":"finanzas"}
+{"id":"av028","task":"ads_vertical","text":"Consolida tus Deudas | Un Solo Pago Mensual Más Bajo | Evaluación sin costo y sin compromiso.","label":"finanzas"}
+{"id":"av029","task":"ads_vertical","text":"Terminal Punto de Venta para tu Negocio | Acepta Tarjetas | Comisión desde 2.9% por transacción.","label":"finanzas"}
+{"id":"av030","task":"ads_vertical","text":"Hipoteca Fija al 2,9% TAE | Banco Online | Calcula tu cuota y pide tu oferta vinculante.","label":"finanzas"}
+{"id":"av031","task":"ads_vertical","text":"Aprende Inglés en 6 Meses | Clases en Vivo con Nativos | Primera clase gratis, sin tarjeta.","label":"educacion"}
+{"id":"av032","task":"ads_vertical","text":"Maestría en Línea en Ciencia de Datos | Validez Oficial | Inscripciones abiertas, becas de hasta 50%.","label":"educacion"}
+{"id":"av033","task":"ads_vertical","text":"Curso de Marketing Digital | Certificado Incluido | Aprende Google Ads y Meta Ads desde cero.","label":"educacion"}
+{"id":"av034","task":"ads_vertical","text":"Prepa Abierta en 6 Meses | Estudia desde Casa | Certificado con validez SEP.","label":"educacion"}
+{"id":"av035","task":"ads_vertical","text":"Bootcamp de Programación Full Stack | 16 Semanas | Paga cuando consigas empleo.","label":"educacion"}
+{"id":"av036","task":"ads_vertical","text":"Universidad Privada en Guadalajara | Licenciaturas y Posgrados | Agenda tu visita al campus.","label":"educacion"}
+{"id":"av037","task":"ads_vertical","text":"Clases de Regularización para Primaria y Secundaria | Matemáticas y Español | Profesores certificados.","label":"educacion"}
+{"id":"av038","task":"ads_vertical","text":"Oposiciones a Educación 2027 | Academia Online | Temario actualizado y simulacros semanales.","label":"educacion"}
+{"id":"av039","task":"ads_vertical","text":"Curso de Excel Avanzado | Tablas Dinámicas y Macros | Acceso de por vida a las lecciones.","label":"educacion"}
+{"id":"av040","task":"ads_vertical","text":"Certificación PMP | Preparación Intensiva | Garantizamos tu aprendizaje con instructores acreditados.","label":"educacion"}
+{"id":"av041","task":"ads_vertical","text":"Dentista en Polanco | Limpieza Dental $499 | Agenda tu cita hoy, atención el mismo día.","label":"salud_belleza"}
+{"id":"av042","task":"ads_vertical","text":"Crema Antiarrugas con Retinol | Dermatológicamente Probada | Envío gratis en compras mayores a $599.","label":"salud_belleza"}
+{"id":"av043","task":"ads_vertical","text":"Clínica de Fisioterapia | Rehabilitación de Lesiones Deportivas | Primera valoración sin costo.","label":"salud_belleza"}
+{"id":"av044","task":"ads_vertical","text":"Farmacia en Línea | Medicamentos a Domicilio en 2 Horas | Receta digital aceptada.","label":"salud_belleza"}
+{"id":"av045","task":"ads_vertical","text":"Depilación Láser Diodo | Paquetes por Zona | Tecnología indolora, resultados desde la 1a sesión.","label":"salud_belleza"}
+{"id":"av046","task":"ads_vertical","text":"Laboratorio Clínico | Check-up Completo $899 | Resultados en línea en 24 horas.","label":"salud_belleza"}
+{"id":"av047","task":"ads_vertical","text":"Psicólogos en Línea | Terapia por Videollamada | Encuentra a tu especialista ideal hoy.","label":"salud_belleza"}
+{"id":"av048","task":"ads_vertical","text":"Perfumes Originales para Dama | Hasta 50% de Descuento | Las mejores fragancias de diseñador.","label":"salud_belleza"}
+{"id":"av049","task":"ads_vertical","text":"Ortodoncia Invisible | Alineadores Transparentes | Pagos mensuales desde $1,500.","label":"salud_belleza"}
+{"id":"av050","task":"ads_vertical","text":"Barbería Premium | Corte + Barba $250 | Reserva tu turno desde WhatsApp.","label":"salud_belleza"}
+{"id":"av051","task":"ads_vertical","text":"Software de Facturación Electrónica | CFDI 4.0 | Prueba gratis 30 días, sin instalar nada.","label":"tecnologia"}
+{"id":"av052","task":"ads_vertical","text":"iPhone 17 Pro | Disponible Ahora | Hasta 18 meses sin intereses y entrega al día siguiente.","label":"tecnologia"}
+{"id":"av053","task":"ads_vertical","text":"CRM para Pequeñas Empresas | Automatiza tus Ventas | Plan gratuito para hasta 3 usuarios.","label":"tecnologia"}
+{"id":"av054","task":"ads_vertical","text":"Laptops Gamer RTX | Las Mejores Marcas | Arma tu equipo ideal con asesoría experta.","label":"tecnologia"}
+{"id":"av055","task":"ads_vertical","text":"Internet de Fibra Óptica 500 Megas | Instalación Gratis | Contrata hoy y obtén el primer mes sin costo.","label":"tecnologia"}
+{"id":"av056","task":"ads_vertical","text":"Hosting y Dominio .com | Desde $49 al Mes | Crea tu sitio web con certificado SSL incluido.","label":"tecnologia"}
+{"id":"av057","task":"ads_vertical","text":"Antivirus para Empresas | Protección contra Ransomware | Solicita una demo con un especialista.","label":"tecnologia"}
+{"id":"av058","task":"ads_vertical","text":"Audífonos Inalámbricos con Cancelación de Ruido | Hasta 40 Horas de Batería | Envío gratis.","label":"tecnologia"}
+{"id":"av059","task":"ads_vertical","text":"Plan de Telefonía Móvil Ilimitado | Portabilidad en 24h | Conserva tu número.","label":"tecnologia"}
+{"id":"av060","task":"ads_vertical","text":"Reparación de Celulares | Cambio de Pantalla en 1 Hora | Garantía de 90 días en refacciones.","label":"tecnologia"}
+{"id":"av061","task":"ads_vertical","text":"Departamentos en Venta en Monterrey | Preventa desde $2.1 MDP | Amenidades de lujo y roof garden.","label":"inmobiliaria"}
+{"id":"av062","task":"ads_vertical","text":"Casas en Renta en Querétaro | Fraccionamientos con Seguridad | Agenda tu recorrido hoy.","label":"inmobiliaria"}
+{"id":"av063","task":"ads_vertical","text":"Terrenos Campestres a Meses | Sin Buró de Crédito | Escrituración inmediata.","label":"inmobiliaria"}
+{"id":"av064","task":"ads_vertical","text":"Pisos de Obra Nueva en Valencia | 2 y 3 Dormitorios | Piscina comunitaria y garaje incluido.","label":"inmobiliaria"}
+{"id":"av065","task":"ads_vertical","text":"Vende tu Casa en 30 Días | Avalúo Gratis | Asesores inmobiliarios certificados en tu zona.","label":"inmobiliaria"}
+{"id":"av066","task":"ads_vertical","text":"Oficinas en Renta en Santa Fe | Espacios Amueblados | Contratos flexibles desde 6 meses.","label":"inmobiliaria"}
+{"id":"av067","task":"ads_vertical","text":"Lotes Residenciales en Mérida | Enganche desde 10% | Plusvalía garantizada por la zona.","label":"inmobiliaria"}
+{"id":"av068","task":"ads_vertical","text":"Usa tu Crédito Infonavit | Casas Nuevas Listas para Habitar | Te ayudamos con todo el trámite.","label":"inmobiliaria"}
+{"id":"av069","task":"ads_vertical","text":"Departamentos para Estudiantes | Cerca de CU | Renta mensual con servicios incluidos.","label":"inmobiliaria"}
+{"id":"av070","task":"ads_vertical","text":"Locales Comerciales en Plaza Nueva | Alta Afluencia | Solicita planos y precios.","label":"inmobiliaria"}
+{"id":"av071","task":"ads_vertical","text":"Autos Seminuevos Certificados | Garantía de 1 Año | Financiamiento con enganche desde 15%.","label":"automotriz"}
+{"id":"av072","task":"ads_vertical","text":"Nuevo SUV Híbrido 2027 | Agenda tu Prueba de Manejo | Bonos de hasta $60,000 este mes.","label":"automotriz"}
+{"id":"av073","task":"ads_vertical","text":"Refacciones Originales para tu Auto | Frenos, Filtros y Más | Envío a todo México.","label":"automotriz"}
+{"id":"av074","task":"ads_vertical","text":"Taller Mecánico Especializado | Afinación Mayor $1,899 | Diagnóstico por computadora gratis.","label":"automotriz"}
+{"id":"av075","task":"ads_vertical","text":"Llantas a Precio de Mayoreo | Instalación y Balanceo Incluidos | Compra 3 y la 4a es gratis.","label":"automotriz"}
+{"id":"av076","task":"ads_vertical","text":"Vende tu Coche Hoy | Tasación Online en 5 Minutos | Te pagamos al instante por transferencia.","label":"automotriz"}
+{"id":"av077","task":"ads_vertical","text":"Motos Italianas 2027 | Concesionario Oficial | Financiación al 0% TIN en modelos seleccionados.","label":"automotriz"}
+{"id":"av078","task":"ads_vertical","text":"Hojalatería y Pintura | Reparación de Golpes | Trabajamos con todas las aseguradoras.","label":"automotriz"}
+{"id":"av079","task":"ads_vertical","text":"Cargadores para Autos Eléctricos | Instalación en Casa | Cotiza tu wallbox con nuestros técnicos.","label":"automotriz"}
+{"id":"av080","task":"ads_vertical","text":"Agencia Pick-Up Doble Cabina | Versiones 4x4 | Conoce el plan de lealtad para flotillas.","label":"automotriz"}
+{"id":"av081","task":"ads_vertical","text":"Pizza a Domicilio 2x1 Todos los Martes | Pide en la App | Llega caliente en 30 minutos o menos.","label":"alimentos"}
+{"id":"av082","task":"ads_vertical","text":"Supermercado en Línea | Frutas y Verduras Frescas | Entrega el mismo día en tu colonia.","label":"alimentos"}
+{"id":"av083","task":"ads_vertical","text":"Restaurante de Sushi en Condesa | Reserva tu Mesa | Menú omakase de temporada.","label":"alimentos"}
+{"id":"av084","task":"ads_vertical","text":"Café de Especialidad de Chiapas | Suscripción Mensual | Recibe tu café recién tostado en casa.","label":"alimentos"}
+{"id":"av085","task":"ads_vertical","text":"Comida Saludable Semanal | Planes Fit y Keto | Elige tus platillos y te los llevamos.","label":"alimentos"}
+{"id":"av086","task":"ads_vertical","text":"Vinos Españoles con Descuento | Rioja y Ribera del Duero | Envío gratis desde 6 botellas.","label":"alimentos"}
+{"id":"av087","task":"ads_vertical","text":"Pasteles para Cumpleaños | Personalizados a tu Gusto | Pide con 48 horas de anticipación.","label":"alimentos"}
+{"id":"av088","task":"ads_vertical","text":"Taquería Abierta 24 Horas | Al Pastor y Suadero | Pide por WhatsApp para llevar.","label":"alimentos"}
+{"id":"av089","task":"ads_vertical","text":"Catering para Eventos Corporativos | Desayunos y Coffee Break | Cotiza para 20 a 500 personas.","label":"alimentos"}
+{"id":"av090","task":"ads_vertical","text":"Cerveza Artesanal | Caja Mixta de 12 | Descubre estilos IPA, Stout y Lager de la casa.","label":"alimentos"}
+{"id":"av091","task":"ads_vertical","text":"Plomero a Domicilio 24/7 | Destapamos Drenajes | Llegamos en menos de 1 hora.","label":"hogar_servicios"}
+{"id":"av092","task":"ads_vertical","text":"Mudanzas Locales y Foráneas | Embalaje Incluido | Cotización gratis por WhatsApp.","label":"hogar_servicios"}
+{"id":"av093","task":"ads_vertical","text":"Limpieza Profunda de Hogar | Personal de Confianza | Agenda por horas o por paquete mensual.","label":"hogar_servicios"}
+{"id":"av094","task":"ads_vertical","text":"Salas y Comedores Modernos | Fabricantes Directos | Hasta 12 meses sin intereses.","label":"hogar_servicios"}
+{"id":"av095","task":"ads_vertical","text":"Instalación de Minisplits | Mantenimiento Preventivo | Técnicos certificados en todas las marcas.","label":"hogar_servicios"}
+{"id":"av096","task":"ads_vertical","text":"Fumigación de Cucarachas y Termitas | Garantía por Escrito | Servicio para casas y negocios.","label":"hogar_servicios"}
+{"id":"av097","task":"ads_vertical","text":"Cerrajero Urgente en Madrid | Apertura de Puertas | Presupuesto cerrado sin sorpresas.","label":"hogar_servicios"}
+{"id":"av098","task":"ads_vertical","text":"Cortinas y Persianas a la Medida | Toma de Medidas Gratis | Instalación en 72 horas.","label":"hogar_servicios"}
+{"id":"av099","task":"ads_vertical","text":"Remodelación de Cocinas | Diseño 3D sin Costo | Cubiertas de cuarzo y granito.","label":"hogar_servicios"}
+{"id":"av100","task":"ads_vertical","text":"Colchones Ortopédicos | 100 Noches de Prueba | Envío e instalación gratis en tu recámara.","label":"hogar_servicios"}
+{"id":"si001","task":"search_intent","text":"qué es el retargeting","label":"informacional"}
+{"id":"si002","task":"search_intent","text":"cómo quitar manchas de vino tinto de la ropa","label":"informacional"}
+{"id":"si003","task":"search_intent","text":"cuántas calorías tiene un aguacate","label":"informacional"}
+{"id":"si004","task":"search_intent","text":"síntomas de deshidratación en niños","label":"informacional"}
+{"id":"si005","task":"search_intent","text":"por qué se calienta mi celular al cargar","label":"informacional"}
+{"id":"si006","task":"search_intent","text":"historia de la independencia de méxico resumen","label":"informacional"}
+{"id":"si007","task":"search_intent","text":"cómo calcular el ROAS de una campaña","label":"informacional"}
+{"id":"si008","task":"search_intent","text":"requisitos para tramitar pasaporte mexicano","label":"informacional"}
+{"id":"si009","task":"search_intent","text":"qué significa cuota de impresiones en google ads","label":"informacional"}
+{"id":"si010","task":"search_intent","text":"diferencia entre interés simple y compuesto","label":"informacional"}
+{"id":"si011","task":"search_intent","text":"cuánto tiempo dura el jet lag","label":"informacional"}
+{"id":"si012","task":"search_intent","text":"cómo hacer pan de muerto casero","label":"informacional"}
+{"id":"si013","task":"search_intent","text":"facebook iniciar sesión","label":"navegacional"}
+{"id":"si014","task":"search_intent","text":"bbva méxico banca en línea","label":"navegacional"}
+{"id":"si015","task":"search_intent","text":"youtube","label":"navegacional"}
+{"id":"si016","task":"search_intent","text":"liverpool sitio oficial","label":"navegacional"}
+{"id":"si017","task":"search_intent","text":"gmail","label":"navegacional"}
+{"id":"si018","task":"search_intent","text":"portal sat","label":"navegacional"}
+{"id":"si019","task":"search_intent","text":"netflix login","label":"navegacional"}
+{"id":"si020","task":"search_intent","text":"mercado libre mis compras","label":"navegacional"}
+{"id":"si021","task":"search_intent","text":"aeroméxico check in","label":"navegacional"}
+{"id":"si022","task":"search_intent","text":"zara españa web oficial","label":"navegacional"}
+{"id":"si023","task":"search_intent","text":"telcel mi cuenta","label":"navegacional"}
+{"id":"si024","task":"search_intent","text":"google ads iniciar sesión","label":"navegacional"}
+{"id":"si025","task":"search_intent","text":"mejores audífonos inalámbricos 2026","label":"comercial"}
+{"id":"si026","task":"search_intent","text":"iphone 17 vs samsung galaxy s26 comparativa","label":"comercial"}
+{"id":"si027","task":"search_intent","text":"opiniones de hoteles en tulum","label":"comercial"}
+{"id":"si028","task":"search_intent","text":"cuál es la mejor tarjeta de crédito para viajar","label":"comercial"}
+{"id":"si029","task":"search_intent","text":"reseñas crm hubspot vs salesforce","label":"comercial"}
+{"id":"si030","task":"search_intent","text":"mejor seguro de auto calidad precio","label":"comercial"}
+{"id":"si031","task":"search_intent","text":"laptop para diseño gráfico recomendaciones","label":"comercial"}
+{"id":"si032","task":"search_intent","text":"top 10 universidades en línea méxico","label":"comercial"}
+{"id":"si033","task":"search_intent","text":"colchón memory foam vs resortes cuál es mejor","label":"comercial"}
+{"id":"si034","task":"search_intent","text":"alternativas a canva gratis","label":"comercial"}
+{"id":"si035","task":"search_intent","text":"vale la pena el kindle paperwhite","label":"comercial"}
+{"id":"si036","task":"search_intent","text":"comparar precios de internet fibra óptica","label":"comercial"}
+{"id":"si037","task":"search_intent","text":"comprar tenis nike air max talla 27","label":"transaccional"}
+{"id":"si038","task":"search_intent","text":"reservar vuelo cdmx madrid diciembre","label":"transaccional"}
+{"id":"si039","task":"search_intent","text":"pedir pizza a domicilio cerca de mí","label":"transaccional"}
+{"id":"si040","task":"search_intent","text":"contratar plomero urgente","label":"transaccional"}
+{"id":"si041","task":"search_intent","text":"descargar spotify para pc","label":"transaccional"}
+{"id":"si042","task":"search_intent","text":"cupón de descuento shein","label":"transaccional"}
+{"id":"si043","task":"search_intent","text":"solicitar tarjeta de crédito en línea","label":"transaccional"}
+{"id":"si044","task":"search_intent","text":"precio iphone 17 pro 256 gb comprar","label":"transaccional"}
+{"id":"si045","task":"search_intent","text":"agendar cita dentista sábado","label":"transaccional"}
+{"id":"si046","task":"search_intent","text":"suscripción gimnasio smart fit inscripción","label":"transaccional"}
+{"id":"si047","task":"search_intent","text":"boletos concierto bad bunny","label":"transaccional"}
+{"id":"si048","task":"search_intent","text":"rentar departamento amueblado roma norte","label":"transaccional"}
+{"id":"se001","task":"sentiment","text":"Me llegó el pedido en un día y la calidad es increíble, ya es mi tercera compra con ustedes 🙌","label":"positivo"}
+{"id":"se002","task":"sentiment","text":"La atención en la sucursal de Coyoacán fue de diez, la chica que me atendió súper amable.","label":"positivo"}
+{"id":"se003","task":"sentiment","text":"Los recomiendo al 100%, resolvieron mi problema en menos de una hora.","label":"positivo"}
+{"id":"se004","task":"sentiment","text":"Qué rico estuvo todo!! Definitivamente volvemos el próximo fin de semana.","label":"positivo"}
+{"id":"se005","task":"sentiment","text":"La app nueva está buenísima, mucho más rápida y fácil de usar que la anterior.","label":"positivo"}
+{"id":"se006","task":"sentiment","text":"Mi hija está feliz con su curso, ya habla inglés con más confianza. Gracias equipo!","label":"positivo"}
+{"id":"se007","task":"sentiment","text":"Excelente relación calidad-precio, no esperaba tanto por lo que pagué.","label":"positivo"}
+{"id":"se008","task":"sentiment","text":"Por fin una aseguradora que paga rápido. Chapó.","label":"positivo"}
+{"id":"se009","task":"sentiment","text":"El hotel superó mis expectativas, la vista al mar es de otro mundo 😍","label":"positivo"}
+{"id":"se010","task":"sentiment","text":"Neta, el mejor servicio al cliente que he tenido en años.","label":"positivo"}
+{"id":"se011","task":"sentiment","text":"Me encantó el empaque y el detalle de la notita escrita a mano, se nota el cariño.","label":"positivo"}
+{"id":"se012","task":"sentiment","text":"Llevo dos años con este banco y cero quejas, todo funciona como debe.","label":"positivo"}
+{"id":"se013","task":"sentiment","text":"Pésimo servicio, llevo tres semanas esperando mi reembolso y nadie me responde.","label":"negativo"}
+{"id":"se014","task":"sentiment","text":"El producto llegó roto y encima me quieren cobrar el envío de regreso. Nunca más.","label":"negativo"}
+{"id":"se015","task":"sentiment","text":"Qué maravilla, otra vez sin internet todo el día. Gracias por nada 🙃","label":"negativo"}
+{"id":"se016","task":"sentiment","text":"Me cobraron dos veces la misma compra y en el chat solo me mandan respuestas automáticas.","label":"negativo"}
+{"id":"se017","task":"sentiment","text":"La comida llegó fría y con una hora de retraso. Una decepción total.","label":"negativo"}
+{"id":"se018","task":"sentiment","text":"Wow, excelente estrategia la de subir precios y bajar la calidad. Felicidades, perdieron un cliente.","label":"negativo"}
+{"id":"se019","task":"sentiment","text":"No compren aquí, es una estafa. Las fotos no tienen nada que ver con lo que te mandan.","label":"negativo"}
+{"id":"se020","task":"sentiment","text":"Cancelé mi suscripción porque es imposible darse de baja sin pelearte con soporte.","label":"negativo"}
+{"id":"se021","task":"sentiment","text":"El nuevo comercial de la marca me parece de muy mal gusto, ofensivo y fuera de lugar.","label":"negativo"}
+{"id":"se022","task":"sentiment","text":"Se me descompuso a las dos semanas y la garantía no cubre nada. Qué coraje.","label":"negativo"}
+{"id":"se023","task":"sentiment","text":"Me tuvieron 40 minutos en espera para luego colgarme. Increíble 👏👏","label":"negativo"}
+{"id":"se024","task":"sentiment","text":"La peor experiencia de vuelo de mi vida, perdieron mi maleta y nadie se hace responsable.","label":"negativo"}
+{"id":"se025","task":"sentiment","text":"¿Tienen envíos a Guatemala?","label":"neutro"}
+{"id":"se026","task":"sentiment","text":"¿A qué hora abren los domingos?","label":"neutro"}
+{"id":"se027","task":"sentiment","text":"Hice el pedido el lunes, el número de guía es 4589-221.","label":"neutro"}
+{"id":"se028","task":"sentiment","text":"¿El modelo nuevo es compatible con el cargador del anterior?","label":"neutro"}
+{"id":"se029","task":"sentiment","text":"Vi el anuncio en Instagram, ¿la promoción aplica también en tienda física?","label":"neutro"}
+{"id":"se030","task":"sentiment","text":"Compré la versión de 128 GB en color negro.","label":"neutro"}
+{"id":"se031","task":"sentiment","text":"¿Cuál es la diferencia entre el plan básico y el premium?","label":"neutro"}
+{"id":"se032","task":"sentiment","text":"Mañana paso a recoger mi pedido a la sucursal del centro.","label":"neutro"}
+{"id":"se033","task":"sentiment","text":"¿Aceptan pagos con transferencia SPEI?","label":"neutro"}
+{"id":"se034","task":"sentiment","text":"Etiqueto a mi hermana que andaba buscando algo así @mariana_lp","label":"neutro"}
+{"id":"se035","task":"sentiment","text":"El evento empieza a las 7 pm según la invitación.","label":"neutro"}
+{"id":"se036","task":"sentiment","text":"¿Hasta cuándo es válido el cupón del Buen Fin?","label":"neutro"}
+{"id":"se037","task":"sentiment","text":"La ropa es preciosa y de buena calidad, pero el envío tardó casi un mes.","label":"mixto"}
+{"id":"se038","task":"sentiment","text":"Buen sabor y porciones grandes, aunque el lugar estaba sucio y el mesero de malas.","label":"mixto"}
+{"id":"se039","task":"sentiment","text":"La app es muy útil, lástima que se cierra sola cada dos por tres.","label":"mixto"}
+{"id":"se040","task":"sentiment","text":"El curso tiene contenido excelente, pero la plataforma es lentísima y confusa.","label":"mixto"}
+{"id":"se041","task":"sentiment","text":"El hotel muy bonito y el personal atento, pero nos cobraron cargos que no nos avisaron.","label":"mixto"}
+{"id":"se042","task":"sentiment","text":"Me gusta el diseño del coche, pero el consumo de gasolina es mucho mayor de lo que anunciaban.","label":"mixto"}
+{"id":"se043","task":"sentiment","text":"Precios caros, eso sí, la calidad lo vale.","label":"mixto"}
+{"id":"se044","task":"sentiment","text":"Soporte técnico tardó en contestar, aunque al final me resolvieron todo muy bien.","label":"mixto"}
+{"id":"se045","task":"sentiment","text":"Los audífonos suenan increíble pero se me lastiman las orejas después de una hora.","label":"mixto"}
+{"id":"se046","task":"sentiment","text":"Buena promo, malísima la página: se cayó tres veces antes de poder pagar.","label":"mixto"}
+{"id":"se047","task":"sentiment","text":"El sabor del café es top, el servicio a domicilio no tanto.","label":"mixto"}
+{"id":"se048","task":"sentiment","text":"Me encanta la marca de siempre, pero esta última colección no me convenció para nada.","label":"mixto"}
+{"id":"ap001","task":"ad_policy","text":"Pierde 15 kilos en 7 días sin dieta ni ejercicio | Pastilla 100% natural garantizada.","label":"yes"}
+{"id":"ap002","task":"ad_policy","text":"Gana $50,000 al mes desde casa sin experiencia | Método secreto que los bancos no quieren que conozcas.","label":"yes"}
+{"id":"ap003","task":"ad_policy","text":"Cura la diabetes para siempre con este té milagroso | Los médicos están furiosos.","label":"yes"}
+{"id":"ap004","task":"ad_policy","text":"Préstamo aprobado al 100% sin importar tu historial | Dinero en tu cuenta en 5 minutos, garantizado.","label":"yes"}
+{"id":"ap005","task":"ad_policy","text":"Duplica tu inversión en 30 días con nuestro bot de criptomonedas | Rendimientos garantizados.","label":"yes"}
+{"id":"ap006","task":"ad_policy","text":"Compra seguidores reales y cuentas verificadas | Hackea el algoritmo de Instagram hoy.","label":"yes"}
+{"id":"ap007","task":"ad_policy","text":"Elimina el cáncer de forma natural | Tratamiento alternativo sin quimioterapia con 100% de éxito.","label":"yes"}
+{"id":"ap008","task":"ad_policy","text":"No vas a creer lo que hizo esta actriz para verse 20 años más joven | Haz clic antes de que lo borren.","label":"yes"}
+{"id":"ap009","task":"ad_policy","text":"Licencias de conducir y títulos universitarios sin exámenes | Entrega en 48 horas.","label":"yes"}
+{"id":"ap010","task":"ad_policy","text":"Medicamentos controlados sin receta | Envío discreto a todo el país.","label":"yes"}
+{"id":"ap011","task":"ad_policy","text":"Hazte millonario apostando con nuestro sistema infalible | Ganancias aseguradas cada semana.","label":"yes"}
+{"id":"ap012","task":"ad_policy","text":"Recupera tu cabello en 3 días | Resultados garantizados o te devolvemos el triple de tu dinero.","label":"yes"}
+{"id":"ap013","task":"ad_policy","text":"Réplicas AAA de bolsos de lujo idénticos al original | Nadie notará la diferencia.","label":"yes"}
+{"id":"ap014","task":"ad_policy","text":"Espía el WhatsApp de tu pareja sin que se entere | App indetectable.","label":"yes"}
+{"id":"ap015","task":"ad_policy","text":"Elimina tus deudas legalmente sin pagar un solo peso | El gobierno lo oculta.","label":"yes"}
+{"id":"ap016","task":"ad_policy","text":"Tenis Running Hasta 40% Off | Envío Gratis en 24h | Cambios sin costo durante 30 días.","label":"no"}
+{"id":"ap017","task":"ad_policy","text":"Clínica Dental Certificada | Limpieza y Revisión $499 | Agenda tu cita en línea.","label":"no"}
+{"id":"ap018","task":"ad_policy","text":"Préstamos Personales | Tasa Fija desde 18% CAT Promedio | Sujeto a aprobación de crédito.","label":"no"}
+{"id":"ap019","task":"ad_policy","text":"Curso de Marketing Digital | 40 Horas en Línea | Certificado de participación incluido.","label":"no"}
+{"id":"ap020","task":"ad_policy","text":"Programa de Nutrición Personalizado | Con Nutriólogos Titulados | Primera consulta con 20% de descuento.","label":"no"}
+{"id":"ap021","task":"ad_policy","text":"Fondos de Inversión Regulados | Conoce los Riesgos y Rendimientos Históricos | Asesoría sin costo.","label":"no"}
+{"id":"ap022","task":"ad_policy","text":"Software Contable para PyMEs | Prueba Gratis 14 Días | Soporte en español.","label":"no"}
+{"id":"ap023","task":"ad_policy","text":"Hotel Boutique en Oaxaca | Desayuno Incluido | Reserva directo y obtén late check-out.","label":"no"}
+{"id":"ap024","task":"ad_policy","text":"Gimnasio 24 Horas | Inscripción Gratis Este Mes | Clases grupales incluidas.","label":"no"}
+{"id":"ap025","task":"ad_policy","text":"Seguro de Gastos Médicos Mayores | Cotiza en Línea | Coberturas sujetas a condiciones de la póliza.","label":"no"}
+{"id":"ap026","task":"ad_policy","text":"Protector Solar FPS 50 | Recomendado por Dermatólogos | Resistente al agua por 80 minutos.","label":"no"}
+{"id":"ap027","task":"ad_policy","text":"Autos Seminuevos Certificados | Revisión de 150 Puntos | Financiamiento sujeto a aprobación.","label":"no"}
+{"id":"ap028","task":"ad_policy","text":"Clases de Guitarra para Principiantes | Primera Clase Gratis | Grupos reducidos.","label":"no"}
+{"id":"ap029","task":"ad_policy","text":"Mudanzas Seguras | Personal Asegurado | Cotización sin compromiso por WhatsApp.","label":"no"}
+{"id":"ap030","task":"ad_policy","text":"Suplemento de Proteína Whey | Sabor Chocolate 2 kg | Complementa tu alimentación y entrenamiento.","label":"no"}

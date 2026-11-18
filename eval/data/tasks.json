@@ -1,0 +1,49 @@
+{
+  "version": "es_marketing_v1",
+  "tasks": {
+    "ads_vertical": {
+      "type": "choice",
+      "instructions_es": "¿A qué sector (vertical) de negocio pertenece este anuncio de búsqueda de Google Ads?",
+      "instructions_en": "Which business vertical does this Google Ads search ad belong to?",
+      "options": {
+        "moda_retail": {"es": "Moda, ropa, calzado, accesorios o tiendas de retail en general", "en": "Fashion, clothing, footwear, accessories or general retail stores"},
+        "viajes": {"es": "Viajes, vuelos, hoteles, paquetes turísticos o renta de autos para viaje", "en": "Travel, flights, hotels, tour packages or travel car rental"},
+        "finanzas": {"es": "Bancos, tarjetas de crédito, préstamos, seguros o inversiones", "en": "Banks, credit cards, loans, insurance or investments"},
+        "educacion": {"es": "Cursos, universidades, idiomas, certificaciones o formación en línea", "en": "Courses, universities, languages, certifications or online training"},
+        "salud_belleza": {"es": "Salud, clínicas, dentistas, farmacias, cosmética o cuidado personal", "en": "Health, clinics, dentists, pharmacies, cosmetics or personal care"},
+        "tecnologia": {"es": "Software, SaaS, electrónica, celulares, computadoras o servicios de internet", "en": "Software, SaaS, electronics, phones, computers or internet services"},
+        "inmobiliaria": {"es": "Venta o renta de casas, departamentos, terrenos o créditos hipotecarios de desarrolladoras", "en": "Sale or rental of houses, apartments, land or developer mortgages"},
+        "automotriz": {"es": "Venta de autos nuevos o seminuevos, refacciones, talleres o agencias", "en": "New or used car sales, auto parts, repair shops or dealerships"},
+        "alimentos": {"es": "Restaurantes, comida a domicilio, supermercados o bebidas", "en": "Restaurants, food delivery, supermarkets or beverages"},
+        "hogar_servicios": {"es": "Servicios para el hogar: plomería, limpieza, mudanzas, muebles o decoración", "en": "Home services: plumbing, cleaning, moving, furniture or decor"}
+      }
+    },
+    "search_intent": {
+      "type": "choice",
+      "instructions_es": "¿Cuál es la intención de búsqueda de esta palabra clave (keyword) escrita en Google?",
+      "instructions_en": "What is the search intent of this keyword typed into Google?",
+      "options": {
+        "informacional": {"es": "Quiere aprender o resolver una duda, sin intención de compra inmediata", "en": "Wants to learn or answer a question, no immediate purchase intent"},
+        "navegacional": {"es": "Busca llegar a un sitio, marca o página concreta que ya conoce", "en": "Wants to reach a specific site, brand or page they already know"},
+        "comercial": {"es": "Investiga y compara productos o marcas antes de decidir una compra", "en": "Researches and compares products or brands before deciding to buy"},
+        "transaccional": {"es": "Quiere comprar, contratar, reservar o descargar ahora mismo", "en": "Wants to buy, sign up, book or download right now"}
+      }
+    },
+    "sentiment": {
+      "type": "choice",
+      "instructions_es": "¿Qué sentimiento expresa este comentario de un cliente o usuario sobre la marca o el producto?",
+      "instructions_en": "What sentiment does this customer or user comment express about the brand or product?",
+      "options": {
+        "positivo": {"es": "Opinión favorable: satisfacción, elogio o recomendación", "en": "Favorable: satisfaction, praise or recommendation"},
+        "negativo": {"es": "Opinión desfavorable: queja, enojo, decepción o crítica (incluye sarcasmo negativo)", "en": "Unfavorable: complaint, anger, disappointment or criticism (includes negative sarcasm)"},
+        "neutro": {"es": "Sin carga emocional: pregunta, dato o comentario informativo", "en": "No emotional charge: a question, fact or informative remark"},
+        "mixto": {"es": "Combina claramente aspectos positivos y negativos", "en": "Clearly combines positive and negative aspects"}
+      }
+    },
+    "ad_policy": {
+      "type": "yes_no",
+      "instructions_es": "¿Este anuncio probablemente infringe las políticas publicitarias de Google Ads (promesas engañosas o garantizadas, afirmaciones de salud milagrosas, dinero fácil, contenido sensacionalista o prohibido)?",
+      "instructions_en": "Does this ad likely violate Google Ads advertising policies (misleading or guaranteed promises, miracle health claims, easy money, sensationalist or prohibited content)?"
+    }
+  }
+}

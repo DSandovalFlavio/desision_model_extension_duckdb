@@ -1,0 +1,66 @@
+# name: test/sql/decide_clause.test
+# description: DECIDE clause parsing, lowering and decide_state (no model needed: the source table is empty)
+# group: [sql]
+
+require decide
+
+statement ok
+CREATE TABLE t(x VARCHAR, y INTEGER);
+
+# lowering adds <name>, <name>_confidence, <name>_probabilities next to the source columns
+query I
+SELECT column_name FROM (DESCRIBE SELECT * FROM t DECIDE (
+    CHOOSE 'q' AMONG (a 'desc a', b) AS c,
+    ASK 'q2' AS d
+    GIVEN x, y))
+----
+x
+y
+c
+c_confidence
+c_probabilities
+d
+d_confidence
+d_probabilities
+
+query I
+SELECT count(*) FROM t DECIDE (ASK 'q' AS a GIVEN x);
+----
+0
+
+statement error
+SELECT * FROM t DECIDE (ASK 'q' AS a);
+----
+DECIDE requires GIVEN
+
+statement error
+SELECT * FROM t DECIDE (CHOOSE 'q' AMONG (a) AS c GIVEN x);
+----
+AMONG needs at least 2 options
+
+statement error
+SELECT * FROM t DECIDE (ASK 'q' GIVEN x);
+----
+name the answer of every question with AS
+
+statement error
+SELECT * FROM t DECIDE (CHOOSE 'q' AMONG (a, a) AS c GIVEN x);
+----
+is given more than once
+
+# "decide" is still an ordinary alias
+query I
+SELECT d FROM (SELECT 1 AS d) decide;
+----
+1
+
+# decide_state: text as is, structures as Python json.dumps(indent=2, ensure_ascii=False)
+query I
+SELECT decide_state('hola');
+----
+hola
+
+query I
+SELECT replace(decide_state(struct_pack(canal := 'tw', n := 3, ok := true, tags := ['a', 'ñ'], nulo := NULL::VARCHAR)), chr(10), '|');
+----
+{|  "canal": "tw",|  "n": 3,|  "ok": true,|  "tags": [|    "a",|    "ñ"|  ],|  "nulo": null|}

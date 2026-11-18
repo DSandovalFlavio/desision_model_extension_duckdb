@@ -1,0 +1,64 @@
+# name: test/sql/decide.test
+# description: phase 1 of the decide extension: model registry, settings, version and tokenizer
+# group: [sql]
+
+statement error
+SELECT decide_version();
+----
+Catalog Error
+
+require decide
+
+# --- version / backends -------------------------------------------------------------------------------------
+query I
+SELECT decide_version() LIKE 'decide % | llama.cpp b12521-6f311d7 | backends: %CPU%';
+----
+true
+
+# --- registry: three OneJev1.6 sizes, 4B is the default -----------------------------------------------------
+query IIIII
+SELECT model, is_default, size, quant, license FROM decide_models() ORDER BY file_mb;
+----
+onejev-0.8b	false	0.8B	Q8_0	Apache-2.0
+onejev-4b	true	4B	Q4_K_M	Apache-2.0
+onejev-9b	false	9B	Q4_K_M	Apache-2.0
+
+query I
+SELECT current_setting('decide_model');
+----
+onejev-4b
+
+query I
+SELECT model FROM decide_models() WHERE is_current;
+----
+onejev-4b
+
+statement ok
+SET decide_model = 'onejev-9b';
+
+query I
+SELECT model FROM decide_models() WHERE is_current;
+----
+onejev-9b
+
+statement error
+SET decide_model = 'gpt-5';
+----
+Unknown decide_model 'gpt-5'
+
+statement ok
+RESET decide_model;
+
+# --- a missing model gives an actionable error ----------------------------------------------------------------
+statement ok
+SET decide_model_dir = '__no_such_dir__';
+
+statement error
+SELECT decide_tokenize('hola');
+----
+is not downloaded
+
+query I
+SELECT bool_or(downloaded) FROM decide_models();
+----
+false
