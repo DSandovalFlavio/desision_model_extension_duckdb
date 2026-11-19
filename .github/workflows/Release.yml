@@ -49,9 +49,10 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          $cudaArgs = @()
-          if ("${{ matrix.variant }}" -eq "cuda12") { $cudaArgs = @("-Cuda", "-CudaArch", "${{ matrix.cuda_archs }}") }
-          ./scripts/build_windows.ps1 -Portable @cudaArgs
+          # Hashtable splatting: array splatting would pass "-CudaArch" as a positional value.
+          $buildArgs = @{ Portable = $true }
+          if ("${{ matrix.variant }}" -eq "cuda12") { $buildArgs.Cuda = $true; $buildArgs.CudaArch = "${{ matrix.cuda_archs }}" }
+          ./scripts/build_windows.ps1 @buildArgs
 
       - name: Package
         shell: pwsh
