@@ -52,7 +52,9 @@ El usuario escribe en español; responde en español. El uso es **comercial**: s
 - **Verificado en local:** Windows x64 con el DuckDB 2.0.0 oficial (CPU), paridad de prompts 226/226, paridad de predicciones, `DECIDE`, descarga y caché.
 - **Verificado en el CI (19‑nov‑2026):**
   - El *Main Extension Distribution Pipeline* compila y pasa los 3 `test/sql/*.test` en `linux_amd64`, `linux_arm64`, `osx_arm64` y `windows_amd64`.
-  - El zip `cpu` de *Release* funciona con el DuckDB 2.0.0 oficial.
+  - Los zips `cpu` y `cuda12` de *Release* funcionan con el DuckDB 2.0.0 oficial.
+  - `cuda12`, probado en una Quadro P600 (`sm_61`): `backends: CUDA, CPU`, 226 textos con el 0.8B en 72 s (793 tok/s) frente a 383 s en CPU, con los mismos aciertos y salida limpia del proceso.
+  - Dependencias: el zip `cpu` solo importa DLL de Windows; el `cuda12`, además, las 3 DLL de CUDA incluidas y `nvcuda.dll` (driver).
   - Revisa siempre el run más reciente de Actions antes de dar algo por hecho.
 - **Problemas del CI ya resueltos (no repetir):**
   - Rutas largas de llama.cpp en Windows: por eso llama.cpp está incluido como copia parcial.

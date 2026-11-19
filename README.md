@@ -31,7 +31,7 @@ Necesitas el [DuckDB CLI **2.0.0**](https://github.com/duckdb/duckdb/releases/ta
 
 ### Windows con GPU NVIDIA (recomendado)
 
-1. Descarga `decide_amox-<versión>-windows_amd64-cuda12.zip` desde [Releases](https://github.com/DSandovalFlavio/desision_model_extension_duckdb/releases).
+1. Descarga `decide_amox-<versión>-windows_amd64-cuda12.zip` (~750 MB, porque incluye los kernels de cuatro generaciones de GPU) desde [Releases](https://github.com/DSandovalFlavio/desision_model_extension_duckdb/releases).
    - Funciona con GTX 10xx, RTX 20xx, 30xx y 40xx, y RTX Ada.
    - Necesitas el driver de NVIDIA actualizado; **no** hace falta instalar el CUDA Toolkit.
 2. Descomprime el zip y copia los tres `*.dll` (`cudart64_12`, `cublas64_12`, `cublasLt64_12`) **en la misma carpeta que `duckdb.exe`**. También puedes añadir la carpeta del zip al `PATH`.
@@ -116,7 +116,7 @@ SELECT * FROM amox_models();                                   -- descargados, c
 
 ## Rendimiento
 
-- **La GPU marca la diferencia.** En nuestras pruebas fue unas 10 veces más rápida que la CPU con el mismo modelo.
+- **La GPU marca la diferencia.** Con el zip `cuda12` del release, 226 textos con `onejev-0.8b` tardaron **72 s en una GPU modesta** (Quadro P600, 2 GB), frente a 383 s en CPU (i3‑8100), con los mismos aciertos. En GPUs actuales es todavía más rápido.
 - **Descripciones de opciones cortas.** La pregunta y las opciones se procesan en cada fila y suelen pesar más que el texto.
 - **Textos repetidos y consultas repetidas son gratis:** se deduplican y se guardan en una caché.
 - **Medición:** `SELECT * FROM amox_stats();` muestra tokens/s, decisiones/s, aciertos de caché y el modelo cargado.
