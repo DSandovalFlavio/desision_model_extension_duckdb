@@ -30,12 +30,10 @@ Runtime::Runtime() {
 }
 
 Runtime::~Runtime() {
-	Unload();
-	for (auto &kv : vocab_models_) {
-		llama_model_free(kv.second);
-	}
-	vocab_models_.clear();
-	// llama_backend_free() is deliberately not called: the process may still be unloading other extensions.
+	// Runs at process exit (static object). By then the CUDA driver may already be shut down, and freeing GPU
+	// buffers aborts with "CUDA error" (seen with the cuda12 release build). The OS reclaims host and device memory
+	// of an exiting process, so the model, context and vocabularies are deliberately not freed here.
+	// Unload() is still used at runtime when the session switches models.
 }
 
 Runtime &Runtime::Get() {

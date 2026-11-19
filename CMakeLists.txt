@@ -34,6 +34,9 @@ set(GGML_BACKEND_DL OFF)
 set(GGML_NATIVE ${DECIDE_NATIVE})
 set(GGML_CUDA ${DECIDE_WITH_CUDA})
 set(GGML_CUDA_NCCL OFF)
+# No OpenMP: on Windows it would make the extension depend on VCOMP140.DLL (Visual C++ redistributable), which the
+# release zips cannot assume. ggml then uses its own thread pool.
+set(GGML_OPENMP OFF)
 if(NOT CMAKE_CUDA_ARCHITECTURES)
   # RTX 20xx/30xx/40xx laptops; override with -DCMAKE_CUDA_ARCHITECTURES=...
   set(CMAKE_CUDA_ARCHITECTURES "75;86;89")
