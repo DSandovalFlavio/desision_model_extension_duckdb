@@ -12,3 +12,4 @@ __pycache__/
 /.claude/
 *.log
 test/parity/ext_*.json
+/dist/
