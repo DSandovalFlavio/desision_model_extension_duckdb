@@ -4,7 +4,7 @@
 
 namespace duckdb {
 
-class DecideExtension : public Extension {
+class DecideAmoxExtension : public Extension {
 public:
 	void Load(ExtensionLoader &loader) override;
 	std::string Name() override;

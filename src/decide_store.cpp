@@ -174,7 +174,7 @@ static bool HasStamp(FileSystem &fs, const string &path, const decide::ModelSpec
 	}
 }
 
-//! Prints "decide: <what> 42% (1.1/2.5 GB, 38 MB/s)" to stderr every few percent.
+//! Prints "decide_amox: <what> 42% (1.1/2.5 GB, 38 MB/s)" to stderr every few percent.
 class Progress {
 public:
 	Progress(string what, uint64_t total) : what_(std::move(what)), total_(total), t0_(Clock::now()) {
@@ -184,7 +184,7 @@ public:
 		int pct = total_ ? (int)(done_ * 100 / total_) : 0;
 		if (pct >= next_) {
 			double secs = std::chrono::duration<double>(Clock::now() - t0_).count();
-			fprintf(stderr, "\rdecide: %s %3d%% (%.2f/%.2f GB, %.0f MB/s)   ", what_.c_str(), pct, done_ / 1e9,
+			fprintf(stderr, "\rdecide_amox: %s %3d%% (%.2f/%.2f GB, %.0f MB/s)   ", what_.c_str(), pct, done_ / 1e9,
 			        total_ / 1e9, secs > 0 ? done_ / 1e6 / secs : 0.0);
 			fflush(stderr);
 			next_ = pct + 5;
@@ -211,7 +211,7 @@ static void VerifyExisting(ClientContext &context, FileSystem &fs, const string 
 	auto handle = fs.OpenFile(path, FileFlags::FILE_FLAGS_READ);
 	auto size = handle->GetFileSize();
 	if (size != spec.size_bytes) {
-		throw IOException("decide: '%s' has %llu bytes but %s needs %llu; it is incomplete or a different file. "
+		throw IOException("decide_amox: '%s' has %llu bytes but %s needs %llu; it is incomplete or a different file. "
 		                  "Delete it to download it again.",
 		                  path, (unsigned long long)size, spec.id, (unsigned long long)spec.size_bytes);
 	}
@@ -233,7 +233,7 @@ static void VerifyExisting(ClientContext &context, FileSystem &fs, const string 
 	handle.reset();
 	auto actual = sha.HexDigest();
 	if (actual != spec.sha256) {
-		throw IOException("decide: checksum mismatch for '%s' (expected %s, got %s). Delete the file to download "
+		throw IOException("decide_amox: checksum mismatch for '%s' (expected %s, got %s). Delete the file to download "
 		                  "it again.",
 		                  path, spec.sha256, actual);
 	}
@@ -275,14 +275,14 @@ static string Download(ClientContext &context, FileSystem &fs, const decide::Mod
 	} catch (std::exception &ex) {
 		fs.TryRemoveFile(tmp);
 		ErrorData error(ex);
-		throw IOException("decide: could not download %s: %s\nDownload it by hand into '%s', or SET "
-		                  "decide_model_path = '/path/to/%s'. (The httpfs extension is required for downloads.)",
+		throw IOException("decide_amox: could not download %s: %s\nDownload it by hand into '%s', or SET "
+		                  "amox_model_path = '/path/to/%s'. (The httpfs extension is required for downloads.)",
 		                  url, error.RawMessage(), target_dir, spec.file);
 	}
 	auto actual = sha.HexDigest();
 	if (actual != spec.sha256) {
 		fs.TryRemoveFile(tmp);
-		throw IOException("decide: checksum mismatch after downloading %s (expected %s, got %s)", url, spec.sha256,
+		throw IOException("decide_amox: checksum mismatch after downloading %s (expected %s, got %s)", url, spec.sha256,
 		                  actual);
 	}
 	fs.TryRemoveFile(target + VERIFIED_SUFFIX);
@@ -312,9 +312,9 @@ std::string EnsureModelFile(ClientContext &context, const decide::ModelSpec &spe
 	}
 	if (!auto_download) {
 		throw InvalidInputException(
-		    "Model '%s' (%s) is not downloaded. Expected '%s' under decide_model_dir = '%s'.\n"
-		    "SET decide_auto_download = true, run SELECT decide_download('%s'), download it from %s, or SET "
-		    "decide_model_path.",
+		    "Model '%s' (%s) is not downloaded. Expected '%s' under amox_model_dir = '%s'.\n"
+		    "SET amox_auto_download = true, run SELECT amox_download('%s'), download it from %s, or SET "
+		    "amox_model_path.",
 		    spec.id, spec.file, spec.file, dir, spec.id, decide::DownloadUrl(spec));
 	}
 	path = Download(context, fs, spec, dir);

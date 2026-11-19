@@ -1,7 +1,7 @@
 // Port of the DECIDE grammar extension from altertable-ai/duckdb-decide_onnx (src/decide_grammar.cpp, MIT License;
 // notice in THIRD_PARTY_NOTICES.md), adapted to DuckDB v2.0.0 and to this extension's functions:
-//   - the state is rendered by decide_state() (qev render_state: text as is, several inputs as indent-2 JSON);
-//   - options are a MAP(VARCHAR, VARCHAR) for decision_choose(state, question, options).
+//   - the state is rendered by amox_state() (qev render_state: text as is, several inputs as indent-2 JSON);
+//   - options are a MAP(VARCHAR, VARCHAR) for amox_choose(state, question, options).
 #include "decide_grammar.hpp"
 
 #include "duckdb/common/exception.hpp"
@@ -37,28 +37,28 @@ namespace decide_grammar {
 static const char *const DECIDE_RULES[] = {
     // FROM <relation> DECIDE (...), tried before the stock table refs. Without an alias of its own the relation
     // reads DECIDE as its alias, hence the optional keyword.
-    "DecideTableRef <- DecideSource DecideKeyword? Parens(DecideBody) TableAlias?",
-    "DecideSource <- ValuesRef / TableFunction / TableSubquery / BaseTableRef / ParensTableRef",
-    "DecideKeyword <- 'DECIDE'",
-    "DecideBody <- List(DecideQuestion) DecideGiven?",
-    "DecideQuestion <- (DecideChoose / DecideAsk) DecideQuestionAlias?",
-    "DecideQuestionAlias <- 'AS' ColLabelOrString",
-    "DecideChoose <- 'CHOOSE' Expression DecideAmong",
-    "DecideAsk <- 'ASK' Expression",
-    "DecideAmong <- 'AMONG' Parens(List(DecideOption))",
-    "DecideOption <- ColIdOrString Expression?",
-    "DecideGiven <- 'GIVEN' List(DecideInput)",
-    "DecideInput <- Expression DecideInputAlias?",
-    "DecideInputAlias <- 'AS' ColLabelOrString",
-    // decision_choose(question AMONG (...) GIVEN ...) and decision_yes_no(question GIVEN ...): the functions,
+    "AmoxDecideTableRef <- AmoxDecideSource AmoxDecideKeyword? Parens(AmoxDecideBody) TableAlias?",
+    "AmoxDecideSource <- ValuesRef / TableFunction / TableSubquery / BaseTableRef / ParensTableRef",
+    "AmoxDecideKeyword <- 'DECIDE'",
+    "AmoxDecideBody <- List(AmoxDecideQuestion) AmoxDecideGiven?",
+    "AmoxDecideQuestion <- (AmoxDecideChoose / AmoxDecideAsk) AmoxDecideQuestionAlias?",
+    "AmoxDecideQuestionAlias <- 'AS' ColLabelOrString",
+    "AmoxDecideChoose <- 'CHOOSE' Expression AmoxDecideAmong",
+    "AmoxDecideAsk <- 'ASK' Expression",
+    "AmoxDecideAmong <- 'AMONG' Parens(List(AmoxDecideOption))",
+    "AmoxDecideOption <- ColIdOrString Expression?",
+    "AmoxDecideGiven <- 'GIVEN' List(AmoxDecideInput)",
+    "AmoxDecideInput <- Expression AmoxDecideInputAlias?",
+    "AmoxDecideInputAlias <- 'AS' ColLabelOrString",
+    // amox_choose(question AMONG (...) GIVEN ...) and amox_yes_no(question GIVEN ...): the functions,
     // spelled like the clause
-    "DecideChooseCall <- 'DECISION_CHOOSE' Parens(DecideChooseCallBody)",
-    "DecideChooseCallBody <- Expression DecideAmong DecideGiven",
-    "DecideYesNoCall <- 'DECISION_YES_NO' Parens(DecideYesNoCallBody)",
-    "DecideYesNoCallBody <- Expression DecideGiven",
+    "AmoxDecideChooseCall <- 'AMOX_CHOOSE' Parens(AmoxDecideChooseCallBody)",
+    "AmoxDecideChooseCallBody <- Expression AmoxDecideAmong AmoxDecideGiven",
+    "AmoxDecideYesNoCall <- 'AMOX_YES_NO' Parens(AmoxDecideYesNoCallBody)",
+    "AmoxDecideYesNoCallBody <- Expression AmoxDecideGiven",
 };
 
-static constexpr const char *DECISION_COLUMN_PREFIX = "__decision_";
+static constexpr const char *DECISION_COLUMN_PREFIX = "__amox_decision_";
 
 //===--------------------------------------------------------------------===//
 // Parse result helpers
@@ -200,12 +200,12 @@ static DecideQuestionSpec TransformQuestion(PEGTransformer &transformer, ParseRe
 	auto &kind = SelectedChoice(list_pr.GetChild(0));
 	auto &kind_pr = kind.Cast<ListParseResult>();
 	spec.question = TransformExpression(transformer, kind_pr.GetChild(1));
-	if (StringUtil::CIEquals(kind.Name(), "DecideAsk")) {
+	if (StringUtil::CIEquals(kind.Name(), "AmoxDecideAsk")) {
 		spec.yes_no = true;
-	} else if (StringUtil::CIEquals(kind.Name(), "DecideChoose")) {
+	} else if (StringUtil::CIEquals(kind.Name(), "AmoxDecideChoose")) {
 		spec.options = TransformAmong(transformer, kind_pr.GetChild(2));
 	} else {
-		throw InternalException("decide: unexpected DECIDE question rule '%s'", kind.Name());
+		throw InternalException("decide_amox: unexpected DECIDE question rule '%s'", kind.Name());
 	}
 	// The name is optional in the grammar only to give a clearer error than a syntax error.
 	auto alias = OptionalChild(list_pr, 1);
@@ -264,17 +264,17 @@ static unique_ptr<ParsedExpression> Function(const string &name, ARGS... args) {
 	return Function(name, std::move(children));
 }
 
-//! The state, rendered like qev's render_state: decide_state(input) for one input (text as is, anything else as
-//! JSON), decide_state(struct_pack(name := input, ...)) for several (an indent-2 JSON object).
+//! The state, rendered like qev's render_state: amox_state(input) for one input (text as is, anything else as
+//! JSON), amox_state(struct_pack(name := input, ...)) for several (an indent-2 JSON object).
 static unique_ptr<ParsedExpression> StateExpression(const vector<DecideInputSpec> &inputs) {
 	if (inputs.size() == 1) {
-		return Function("decide_state", inputs[0].expression->Copy());
+		return Function("amox_state", inputs[0].expression->Copy());
 	}
 	vector<FunctionArgument> fields;
 	for (auto &input : inputs) {
 		fields.emplace_back(Identifier(input.name), WithAlias(input.expression->Copy(), input.name));
 	}
-	return Function("decide_state", make_uniq<FunctionExpression>(Identifier("struct_pack"), std::move(fields)));
+	return Function("amox_state", make_uniq<FunctionExpression>(Identifier("struct_pack"), std::move(fields)));
 }
 
 //! map(['billing', ...], ['Billing: charges, refunds', NULL, ...]); a NULL description reads as the key.
@@ -290,12 +290,12 @@ static unique_ptr<ParsedExpression> OptionsExpression(const vector<DecideOptionS
 }
 
 static unique_ptr<ParsedExpression> ChooseCall(unique_ptr<ParsedExpression> state, const DecideQuestionSpec &question) {
-	return Function("decision_choose", std::move(state), question.question->Copy(),
+	return Function("amox_choose", std::move(state), question.question->Copy(),
 	                OptionsExpression(question.options));
 }
 
 static unique_ptr<ParsedExpression> YesNoCall(unique_ptr<ParsedExpression> state, const DecideQuestionSpec &question) {
-	return Function("decision_yes_no", std::move(state), question.question->Copy());
+	return Function("amox_yes_no", std::move(state), question.question->Copy());
 }
 
 static unique_ptr<SelectStatement> MakeStatement(unique_ptr<QueryNode> node) {
@@ -305,12 +305,12 @@ static unique_ptr<SelectStatement> MakeStatement(unique_ptr<QueryNode> node) {
 }
 
 //! FROM <source> DECIDE (CHOOSE ... AS team, ASK ... AS refund GIVEN ...) becomes
-//! SELECT * EXCLUDE (__decision_0, __decision_1),
-//!        __decision_0.choice AS team, __decision_0.confidence AS team_confidence,
-//!        __decision_0.probabilities AS team_probabilities,
-//!        __decision_1 >= 0.5 AS refund, greatest(__decision_1, 1 - __decision_1) AS refund_confidence,
-//!        map(['yes', 'no'], [__decision_1, 1 - __decision_1]) AS refund_probabilities
-//! FROM (SELECT *, decision_choose(<state>, ...) AS __decision_0, decision_yes_no(<state>, ...) AS __decision_1
+//! SELECT * EXCLUDE (__amox_decision_0, __amox_decision_1),
+//!        __amox_decision_0.choice AS team, __amox_decision_0.confidence AS team_confidence,
+//!        __amox_decision_0.probabilities AS team_probabilities,
+//!        __amox_decision_1 >= 0.5 AS refund, greatest(__amox_decision_1, 1 - __amox_decision_1) AS refund_confidence,
+//!        map(['yes', 'no'], [__amox_decision_1, 1 - __amox_decision_1]) AS refund_probabilities
+//! FROM (SELECT *, amox_choose(<state>, ...) AS __amox_decision_0, amox_yes_no(<state>, ...) AS __amox_decision_1
 //!       FROM <source>)
 static unique_ptr<SelectNode> LowerDecide(const DecideSpec &spec, unique_ptr<TableRef> source) {
 	auto inner = make_uniq<SelectNode>();
@@ -389,7 +389,7 @@ static unique_ptr<TableRef> TransformDecideTableRef(PEGTransformer &transformer,
 	return std::move(result);
 }
 
-// DecideChooseCall <- 'DECISION_CHOOSE' Parens(DecideChooseCallBody)
+// DecideChooseCall <- 'AMOX_CHOOSE' Parens(DecideChooseCallBody)
 // DecideChooseCallBody <- Expression DecideAmong DecideGiven
 static unique_ptr<ParsedExpression> TransformChooseCall(PEGTransformer &transformer, ParseResult &parse_result) {
 	auto &body = PEGTransformerFactory::ExtractResultFromParens(parse_result.Cast<ListParseResult>().GetChild(1))
@@ -400,7 +400,7 @@ static unique_ptr<ParsedExpression> TransformChooseCall(PEGTransformer &transfor
 	return ChooseCall(StateExpression(TransformGiven(transformer, body.GetChild(2))), question);
 }
 
-// DecideYesNoCall <- 'DECISION_YES_NO' Parens(DecideYesNoCallBody)
+// DecideYesNoCall <- 'AMOX_YES_NO' Parens(DecideYesNoCallBody)
 // DecideYesNoCallBody <- Expression DecideGiven
 static unique_ptr<ParsedExpression> TransformYesNoCall(PEGTransformer &transformer, ParseResult &parse_result) {
 	auto &body = PEGTransformerFactory::ExtractResultFromParens(parse_result.Cast<ListParseResult>().GetChild(1))
@@ -420,11 +420,11 @@ static bool IsFunctionExpressionReference(const PEGExpression &expression) {
 
 class DecideGrammarExtension final : public GrammarExtension {
 public:
-	static constexpr const char *NAME = "decide";
+	static constexpr const char *NAME = "decide_amox";
 
 	DecideGrammarExtension()
-	    : GrammarExtension(NAME, "DECIDE clause, decision_choose(question AMONG (...) GIVEN ...) and "
-	                             "decision_yes_no(question GIVEN ...)") {
+	    : GrammarExtension(NAME, "DECIDE clause, amox_choose(question AMONG (...) GIVEN ...) and "
+	                             "amox_yes_no(question GIVEN ...)") {
 	}
 
 	vector<GrammarChange> GetChanges() const override {
@@ -433,16 +433,16 @@ public:
 			changes.push_back(GrammarChange::AddRule(rule));
 		}
 		changes.push_back(GrammarChange::SetTransformProcess(
-		    "DecideTableRef", MakeTransform<unique_ptr<TableRef>>(TransformDecideTableRef)));
+		    "AmoxDecideTableRef", MakeTransform<unique_ptr<TableRef>>(TransformDecideTableRef)));
 		changes.push_back(GrammarChange::SetTransformProcess(
-		    "DecideChooseCall", MakeTransform<unique_ptr<ParsedExpression>>(TransformChooseCall)));
+		    "AmoxDecideChooseCall", MakeTransform<unique_ptr<ParsedExpression>>(TransformChooseCall)));
 		changes.push_back(GrammarChange::SetTransformProcess(
-		    "DecideYesNoCall", MakeTransform<unique_ptr<ParsedExpression>>(TransformYesNoCall)));
-		changes.push_back(GrammarChange::PrependChoice("InnerTableRef", "DecideTableRef"));
+		    "AmoxDecideYesNoCall", MakeTransform<unique_ptr<ParsedExpression>>(TransformYesNoCall)));
+		changes.push_back(GrammarChange::PrependChoice("InnerTableRef", "AmoxDecideTableRef"));
 		changes.push_back(
-		    GrammarChange::PrependChoice("SingleExpression", "DecideChooseCall", IsFunctionExpressionReference));
+		    GrammarChange::PrependChoice("SingleExpression", "AmoxDecideChooseCall", IsFunctionExpressionReference));
 		changes.push_back(
-		    GrammarChange::PrependChoice("SingleExpression", "DecideYesNoCall", IsFunctionExpressionReference));
+		    GrammarChange::PrependChoice("SingleExpression", "AmoxDecideYesNoCall", IsFunctionExpressionReference));
 		return changes;
 	}
 
@@ -494,7 +494,7 @@ private:
 //! next query ends, since another thread may be parsing with their grammar right now.
 class PendingDecideGrammarActivation final : public ClientContextState {
 public:
-	static constexpr const char *KEY = "decide_pending_grammar_activation";
+	static constexpr const char *KEY = "decide_amox_pending_grammar_activation";
 
 	explicit PendingDecideGrammarActivation(shared_ptr<DecideGrammarExtension> grammar_p)
 	    : grammar(std::move(grammar_p)) {

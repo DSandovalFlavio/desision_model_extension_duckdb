@@ -8,6 +8,8 @@
 
 > Investigación hecha el 18‑nov‑2026. Las cifras vienen de model cards, repositorios y PRs públicos, no de mediciones propias. La fase 0 existe precisamente para medir en tus datos.
 
+> **Renombrado (19‑nov‑2026):** la extensión ahora se llama **`decide_amox`** y todas las funciones y ajustes SQL usan el prefijo **`amox_`** (`decision_choose` → `amox_choose`, `decide_model` → `amox_model`, etc.). Este plan conserva los nombres antiguos en las secciones históricas.
+
 ## ✅ Decisiones tomadas (18‑nov‑2026, tras la fase 0)
 
 - **Uso comercial.** Solo entran modelos Apache‑2.0, así que StartLux y openjev quedan fuera.

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Compila la extensión "decide" en Windows con MSVC + Ninja (sin make ni vcpkg).
+  Compila la extensión "decide_amox" en Windows con MSVC + Ninja (sin make ni vcpkg).
 
 .EXAMPLE
   # CPU (cualquier equipo)
@@ -12,7 +12,7 @@
 .NOTES
   Salidas:
     build\<config>\duckdb.exe                                          CLI con la extensión incluida
-    build\<config>\extension\decide\decide.duckdb_extension            extensión cargable (LOAD)
+    build\<config>\extension\decide_amox\decide_amox.duckdb_extension            extensión cargable (LOAD)
 #>
 param(
     [switch]$Cuda,
@@ -63,7 +63,7 @@ $jobsArg = if ($Jobs -gt 0) { "-j $Jobs" } else { "" }
 $flagsText = ($flags | ForEach-Object { if ($_ -match ' ') { "`"$_`"" } else { $_ } }) -join ' '
 $vsInstaller = Split-Path -Parent $vswhere   # vcvars64.bat invoca vswhere.exe y lo busca en el PATH
 # Un .bat con una instrucción por línea: en una sola línea, cmd expande %PATH% antes de que vcvars lo cambie.
-$bat = Join-Path ([IO.Path]::GetTempPath()) "decide_build_$PID.bat"
+$bat = Join-Path ([IO.Path]::GetTempPath()) "decide_amox_build_$PID.bat"
 @"
 @echo off
 set "PATH=$vsInstaller;%PATH%"
@@ -79,7 +79,7 @@ Remove-Item $bat -ErrorAction SilentlyContinue
 $global:LASTEXITCODE = $code
 if ($LASTEXITCODE -ne 0) { throw "La compilación falló (código $LASTEXITCODE)." }
 
-$ext = Get-ChildItem -Path $build -Recurse -Filter "decide.duckdb_extension" | Select-Object -First 1
+$ext = Get-ChildItem -Path $build -Recurse -Filter "decide_amox.duckdb_extension" | Select-Object -First 1
 Write-Host ""
 Write-Host "OK"
 Write-Host "  CLI:       $build\duckdb.exe"

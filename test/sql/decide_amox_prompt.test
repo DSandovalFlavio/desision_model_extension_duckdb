@@ -1,35 +1,35 @@
-# name: test/sql/decide_prompt.test
+# name: test/sql/decide_amox_prompt.test
 # description: qev-labels-v2 prompt rendering (no model needed). Full 226-row parity vs llama-server lives in test/parity.
 # group: [sql]
 
-require decide
+require decide_amox
 
 query I
-SELECT replace(decide_prompt('Me encantó', '¿Sentimiento?', MAP {'positivo': 'Opinión favorable', 'negativo': ''}), chr(10), '\n');
+SELECT replace(amox_prompt('Me encantó', '¿Sentimiento?', MAP {'positivo': 'Opinión favorable', 'negativo': ''}), chr(10), '\n');
 ----
 <|im_start|>system\nApply the question to the state. Choose exactly one of the listed options. Respond with only its uppercase letter, with no explanation or reasoning.<|im_end|>\n<|im_start|>user\n<state>\nMe encantó\n</state>\n\nQuestion: ¿Sentimiento?\n\nOptions:\nA. positivo: Opinión favorable\nB. negativo\n\nAnswer with one letter: A, B.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n
 
 query I
-SELECT replace(decide_prompt('x', 'q', ['a', 'b', 'c']), chr(10), '\n') LIKE '%A. a\nB. b\nC. c\n\nAnswer with one letter: A, B, C.%';
+SELECT replace(amox_prompt('x', 'q', ['a', 'b', 'c']), chr(10), '\n') LIKE '%A. a\nB. b\nC. c\n\nAnswer with one letter: A, B, C.%';
 ----
 true
 
 query I
-SELECT replace(decide_prompt('x', '¿Infringe?'), chr(10), '\n') LIKE '%A. yes: the statement is true / the answer is yes\nB. no: the statement is false / the answer is no%';
+SELECT replace(amox_prompt('x', '¿Infringe?'), chr(10), '\n') LIKE '%A. yes: the statement is true / the answer is yes\nB. no: the statement is false / the answer is no%';
 ----
 true
 
 statement error
-SELECT decide_prompt('x', 'q', ['solo']);
+SELECT amox_prompt('x', 'q', ['solo']);
 ----
 at least 2 options
 
 statement error
-SELECT decide_prompt('x', 'q', ['a', 'a']);
+SELECT amox_prompt('x', 'q', ['a', 'a']);
 ----
 duplicate option
 
 query I
-SELECT decide_prompt(NULL, 'q', ['a', 'b']) IS NULL;
+SELECT amox_prompt(NULL, 'q', ['a', 'b']) IS NULL;
 ----
 true

@@ -48,7 +48,7 @@ struct EngineStats {
 };
 
 //! Process-wide llama.cpp state shared by every DuckDB connection.
-//!  - vocab-only models for decide_tokenize (no weights);
+//!  - vocab-only models for amox_tokenize (no weights);
 //!  - one full model + context for decisions. A single context means a single owner of the GPU: DuckDB threads
 //!    hand whole chunks to Decide(), which serialises them and batches each chunk across sequences.
 class Runtime {

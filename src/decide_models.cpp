@@ -64,7 +64,7 @@ std::string DefaultModelDir() {
 		home = std::getenv("HOME");
 	}
 	fs::path base = (home && *home) ? fs::path(home) : fs::current_path();
-	return (base / ".duckdb" / "decide" / "models").generic_string();
+	return (base / ".duckdb" / "decide_amox" / "models").generic_string();
 }
 
 std::string ResolveModelFile(const ModelSpec &spec, const std::string &dir) {

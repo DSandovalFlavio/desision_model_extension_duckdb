@@ -1,6 +1,6 @@
 #define DUCKDB_EXTENSION_MAIN
 
-#include "decide_extension.hpp"
+#include "decide_amox_extension.hpp"
 
 #include "decide_models.hpp"
 #include "decide_grammar.hpp"
@@ -21,9 +21,9 @@
 
 namespace duckdb {
 
-static constexpr const char *SETTING_MODEL = "decide_model";
-static constexpr const char *SETTING_MODEL_DIR = "decide_model_dir";
-static constexpr const char *SETTING_MODEL_PATH = "decide_model_path";
+static constexpr const char *SETTING_MODEL = "amox_model";
+static constexpr const char *SETTING_MODEL_DIR = "amox_model_dir";
+static constexpr const char *SETTING_MODEL_PATH = "amox_model_path";
 
 // ---------------------------------------------------------------------------------------------------------------
 // Settings and model resolution
@@ -43,7 +43,7 @@ static string GetStringSetting(ClientContext &context, const char *name, const s
 static void ValidateModelSetting(ClientContext &, SetScope, Value &parameter) {
 	auto id = parameter.ToString();
 	if (!decide::FindModel(id)) {
-		throw InvalidInputException("Unknown decide_model '%s'. Available models: %s", id, decide::ModelIdList());
+		throw InvalidInputException("Unknown amox_model '%s'. Available models: %s", id, decide::ModelIdList());
 	}
 }
 
@@ -59,7 +59,7 @@ static string CurrentModelId(ClientContext &context) {
 	return GetStringSetting(context, SETTING_MODEL, decide::DefaultModel().id);
 }
 
-//! Local GGUF file for `model_id`. decide_model_path overrides the file of the session's current model only.
+//! Local GGUF file for `model_id`. amox_model_path overrides the file of the session's current model only.
 static string ResolvePath(ClientContext &context, const string &model_id) {
 	auto &spec = SpecOrThrow(model_id);
 	auto override_path = GetStringSetting(context, SETTING_MODEL_PATH, "");
@@ -68,12 +68,12 @@ static string ResolvePath(ClientContext &context, const string &model_id) {
 	}
 	auto dir = GetStringSetting(context, SETTING_MODEL_DIR, decide::DefaultModelDir());
 	Value auto_download;
-	bool download = !(context.TryGetCurrentSetting("decide_auto_download", auto_download) &&
+	bool download = !(context.TryGetCurrentSetting("amox_auto_download", auto_download) &&
 	                  !auto_download.IsNull() && !auto_download.GetValue<bool>());
 	return decide_store::EnsureModelFile(context, spec, dir, download);
 }
 
-//! decide_download([model]) -> VARCHAR: download (or verify) a model now and return its local path.
+//! amox_download([model]) -> VARCHAR: download (or verify) a model now and return its local path.
 static void DownloadFun(DataChunk &args, ExpressionState &state, Vector &result) {
 	auto &context = state.GetContext();
 	for (idx_t i = 0; i < args.size(); i++) {
@@ -92,13 +92,13 @@ static void DownloadFun(DataChunk &args, ExpressionState &state, Vector &result)
 	}
 }
 
-static constexpr const char *SETTING_PARALLEL = "decide_parallel";
-static constexpr const char *SETTING_BATCH_TOKENS = "decide_batch_tokens";
-static constexpr const char *SETTING_GPU_LAYERS = "decide_gpu_layers";
-static constexpr const char *SETTING_THREADS = "decide_threads";
-static constexpr const char *SETTING_KV_CACHE = "decide_kv_cache";
-static constexpr const char *SETTING_MAX_TOKENS = "decide_max_tokens";
-static constexpr const char *SETTING_CACHE_SIZE = "decide_cache_size";
+static constexpr const char *SETTING_PARALLEL = "amox_parallel";
+static constexpr const char *SETTING_BATCH_TOKENS = "amox_batch_tokens";
+static constexpr const char *SETTING_GPU_LAYERS = "amox_gpu_layers";
+static constexpr const char *SETTING_THREADS = "amox_threads";
+static constexpr const char *SETTING_KV_CACHE = "amox_kv_cache";
+static constexpr const char *SETTING_MAX_TOKENS = "amox_max_tokens";
+static constexpr const char *SETTING_CACHE_SIZE = "amox_cache_size";
 
 static int64_t GetIntSetting(ClientContext &context, const char *name, int64_t fallback) {
 	Value v;
@@ -111,7 +111,7 @@ static int64_t GetIntSetting(ClientContext &context, const char *name, int64_t f
 static void ValidateKvCache(ClientContext &, SetScope, Value &parameter) {
 	auto s = parameter.ToString();
 	if (s != "f16" && s != "q8_0") {
-		throw InvalidInputException("decide_kv_cache must be 'f16' or 'q8_0'");
+		throw InvalidInputException("amox_kv_cache must be 'f16' or 'q8_0'");
 	}
 }
 
@@ -135,7 +135,7 @@ static decide::EngineConfig MakeEngineConfig(ClientContext &context, const strin
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// decide_tokenize(text [, model]) -> INTEGER[]
+// amox_tokenize(text [, model]) -> INTEGER[]
 // ---------------------------------------------------------------------------------------------------------------
 
 static void TokenizeFun(DataChunk &args, ExpressionState &state, Vector &result) {
@@ -182,7 +182,7 @@ static void TokenizeFun(DataChunk &args, ExpressionState &state, Vector &result)
 		try {
 			tokens = decide::Runtime::Get().Tokenize(it->second, texts[ti].GetString());
 		} catch (std::exception &e) {
-			throw InvalidInputException("decide_tokenize: %s", e.what());
+			throw InvalidInputException("amox_tokenize: %s", e.what());
 		}
 		ListVector::Reserve(result, offset + tokens.size());
 		// Fetch the child after Reserve: reserving may reallocate it.
@@ -200,7 +200,7 @@ static void TokenizeFun(DataChunk &args, ExpressionState &state, Vector &result)
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// decision_choose / decision_yes_no / decide_prompt
+// amox_choose / amox_yes_no / amox_prompt
 // ---------------------------------------------------------------------------------------------------------------
 
 //! Options from a VARCHAR[] (names only) or a MAP(VARCHAR, VARCHAR) (name -> description).
@@ -211,7 +211,7 @@ static void ReadOptions(const Value &options, decide::DecisionRequest &req) {
 		for (auto &entry : MapValue::GetChildren(options)) {
 			auto &kv = StructValue::GetChildren(entry);
 			if (kv[0].IsNull()) {
-				throw InvalidInputException("decision_choose: option names cannot be NULL");
+				throw InvalidInputException("amox_choose: option names cannot be NULL");
 			}
 			req.labels.push_back(kv[0].ToString());
 			req.descriptions.push_back(kv[1].IsNull() ? string() : kv[1].ToString());
@@ -219,23 +219,23 @@ static void ReadOptions(const Value &options, decide::DecisionRequest &req) {
 	} else {
 		for (auto &item : ListValue::GetChildren(options)) {
 			if (item.IsNull()) {
-				throw InvalidInputException("decision_choose: option names cannot be NULL");
+				throw InvalidInputException("amox_choose: option names cannot be NULL");
 			}
 			req.labels.push_back(item.ToString());
 			req.descriptions.emplace_back();
 		}
 	}
 	if (req.labels.size() < 2) {
-		throw InvalidInputException("decision_choose: at least 2 options are required");
+		throw InvalidInputException("amox_choose: at least 2 options are required");
 	}
 	if (req.labels.size() > (size_t)decide::Prompt::MAX_OPTIONS) {
-		throw InvalidInputException("decision_choose: at most %d options are supported",
+		throw InvalidInputException("amox_choose: at most %d options are supported",
 		                            decide::Prompt::MAX_OPTIONS);
 	}
 	for (size_t a = 0; a < req.labels.size(); a++) {
 		for (size_t b = a + 1; b < req.labels.size(); b++) {
 			if (req.labels[a] == req.labels[b]) {
-				throw InvalidInputException("decision_choose: duplicate option '%s'", req.labels[a]);
+				throw InvalidInputException("amox_choose: duplicate option '%s'", req.labels[a]);
 			}
 		}
 	}
@@ -298,7 +298,7 @@ static void RunDecisions(DataChunk &args, ExpressionState &state, DecisionKind k
 		} catch (InvalidInputException &) {
 			throw;
 		} catch (std::exception &e) {
-			throw InvalidInputException("decide: %s", e.what());
+			throw InvalidInputException("decide_amox: %s", e.what());
 		}
 		for (idx_t k = 0; k < group.second.size(); k++) {
 			answers[group.second[k]] = std::move(probs[k]);
@@ -350,7 +350,7 @@ static void YesNoFun(DataChunk &args, ExpressionState &state, Vector &result) {
 	}
 }
 
-//! decide_prompt(state, question, options): the exact text the model sees (for parity tests and debugging).
+//! amox_prompt(state, question, options): the exact text the model sees (for parity tests and debugging).
 static void PromptFun(DataChunk &args, ExpressionState &, Vector &result) {
 	for (idx_t i = 0; i < args.size(); i++) {
 		Value s = args.data[0].GetValue(i), q = args.data[1].GetValue(i), o = args.data[2].GetValue(i);
@@ -376,7 +376,7 @@ static void PromptYesNoFun(DataChunk &args, ExpressionState &, Vector &result) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// decide_state(any) -> VARCHAR: qev render_state. Text as is; anything else as Python json.dumps(x,
+// amox_state(any) -> VARCHAR: qev render_state. Text as is; anything else as Python json.dumps(x,
 // ensure_ascii=False, indent=2), the layout OneJev saw for structured states in training.
 // ---------------------------------------------------------------------------------------------------------------
 
@@ -536,7 +536,7 @@ static void ClearCacheFun(DataChunk &args, ExpressionState &, Vector &result) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// decide_stats() -> one row with the engine counters
+// amox_stats() -> one row with the engine counters
 // ---------------------------------------------------------------------------------------------------------------
 
 struct OneRowState : public GlobalTableFunctionState {
@@ -582,26 +582,26 @@ static void StatsFun(ClientContext &, TableFunctionInput &input, DataChunk &outp
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// decide_version() -> VARCHAR
+// amox_version() -> VARCHAR
 // ---------------------------------------------------------------------------------------------------------------
 
 static string ExtensionVersion() {
-#ifdef EXT_VERSION_DECIDE
-	return EXT_VERSION_DECIDE;
+#ifdef EXT_VERSION_DECIDE_AMOX
+	return EXT_VERSION_DECIDE_AMOX;
 #else
 	return "dev";
 #endif
 }
 
 static void VersionFun(DataChunk &args, ExpressionState &, Vector &result) {
-	auto text = "decide " + ExtensionVersion() + " | llama.cpp " + decide::Runtime::LlamaBuild() +
+	auto text = "decide_amox " + ExtensionVersion() + " | llama.cpp " + decide::Runtime::LlamaBuild() +
 	            " | backends: " + decide::Runtime::Backends();
 	result.SetVectorType(VectorType::CONSTANT_VECTOR);
 	ConstantVector::GetData<string_t>(result)[0] = StringVector::AddString(result, text.data(), text.size());
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// decide_models() -> one row per known model
+// amox_models() -> one row per known model
 // ---------------------------------------------------------------------------------------------------------------
 
 struct ModelsState : public GlobalTableFunctionState {
@@ -660,29 +660,29 @@ static void ModelsFun(ClientContext &context, TableFunctionInput &input, DataChu
 static void LoadInternal(ExtensionLoader &loader) {
 	auto &config = DBConfig::GetConfig(loader.GetDatabaseInstance());
 	config.AddExtensionOption(SETTING_MODEL,
-	                          "Decision model used by the decide functions: " + decide::ModelIdList(),
+	                          "Decision model used by the decide_amox functions: " + decide::ModelIdList(),
 	                          LogicalType::VARCHAR, Value(decide::DefaultModel().id), ValidateModelSetting);
 	config.AddExtensionOption(SETTING_MODEL_DIR, "Directory holding the GGUF files (<dir>/<file> or <dir>/<model>/<file>)",
 	                          LogicalType::VARCHAR, Value(decide::DefaultModelDir()));
 	config.AddExtensionOption(SETTING_MODEL_PATH,
-	                          "Explicit GGUF file for the current decide_model (overrides decide_model_dir; empty = off)",
+	                          "Explicit GGUF file for the current amox_model (overrides amox_model_dir; empty = off)",
 	                          LogicalType::VARCHAR, Value(""));
 
 	// DuckDB 2.0: overloads become immutable once inside a FunctionSet, so set properties before adding them.
-	ScalarFunctionSet tokenize("decide_tokenize");
+	ScalarFunctionSet tokenize("amox_tokenize");
 	for (auto args : {vector<LogicalType> {LogicalType::VARCHAR},
 	                  vector<LogicalType> {LogicalType::VARCHAR, LogicalType::VARCHAR}}) {
 		ScalarFunction f(args, LogicalType::LIST(LogicalType::INTEGER), TokenizeFun);
-		f.SetVolatile(); // depends on session settings (decide_model, decide_model_dir)
+		f.SetVolatile(); // depends on session settings (amox_model, amox_model_dir)
 		f.SetFallible();  // DuckDB 2.0: functions that may throw must say so
 		tokenize.AddFunction(std::move(f));
 	}
 	loader.RegisterFunction(tokenize);
 
-	ScalarFunction version("decide_version", vector<LogicalType>(), LogicalType::VARCHAR, VersionFun);
+	ScalarFunction version("amox_version", vector<LogicalType>(), LogicalType::VARCHAR, VersionFun);
 	loader.RegisterFunction(version);
 
-	TableFunction models("decide_models", vector<LogicalType>(), ModelsFun, ModelsBind, ModelsInit);
+	TableFunction models("amox_models", vector<LogicalType>(), ModelsFun, ModelsBind, ModelsInit);
 	loader.RegisterFunction(models);
 
 	// --- performance / engine settings ---
@@ -704,7 +704,7 @@ static void LoadInternal(ExtensionLoader &loader) {
 	// --- decisions ---
 	auto options_types = {LogicalType::LIST(LogicalType::VARCHAR),
 	                      LogicalType::MAP(LogicalType::VARCHAR, LogicalType::VARCHAR)};
-	ScalarFunctionSet choose("decision_choose");
+	ScalarFunctionSet choose("amox_choose");
 	for (auto &opt : options_types) {
 		for (bool with_model : {false, true}) {
 			vector<LogicalType> args {LogicalType::VARCHAR, LogicalType::VARCHAR, opt};
@@ -719,7 +719,7 @@ static void LoadInternal(ExtensionLoader &loader) {
 	}
 	loader.RegisterFunction(choose);
 
-	ScalarFunctionSet yes_no("decision_yes_no");
+	ScalarFunctionSet yes_no("amox_yes_no");
 	for (bool with_model : {false, true}) {
 		vector<LogicalType> args {LogicalType::VARCHAR, LogicalType::VARCHAR};
 		if (with_model) {
@@ -732,7 +732,7 @@ static void LoadInternal(ExtensionLoader &loader) {
 	}
 	loader.RegisterFunction(yes_no);
 
-	ScalarFunctionSet prompt("decide_prompt");
+	ScalarFunctionSet prompt("amox_prompt");
 	for (auto &opt : options_types) {
 		ScalarFunction f({LogicalType::VARCHAR, LogicalType::VARCHAR, opt}, LogicalType::VARCHAR, PromptFun);
 		f.SetFallible(); // invalid options throw
@@ -741,17 +741,17 @@ static void LoadInternal(ExtensionLoader &loader) {
 	prompt.AddFunction(ScalarFunction({LogicalType::VARCHAR, LogicalType::VARCHAR}, LogicalType::VARCHAR, PromptYesNoFun));
 	loader.RegisterFunction(prompt);
 
-	ScalarFunction clear_cache("decide_clear_cache", vector<LogicalType>(), LogicalType::BOOLEAN, ClearCacheFun);
+	ScalarFunction clear_cache("amox_clear_cache", vector<LogicalType>(), LogicalType::BOOLEAN, ClearCacheFun);
 	clear_cache.SetVolatile();
 	loader.RegisterFunction(clear_cache);
 
-	TableFunction stats("decide_stats", vector<LogicalType>(), StatsFun, StatsBind, OneRowInit);
+	TableFunction stats("amox_stats", vector<LogicalType>(), StatsFun, StatsBind, OneRowInit);
 	loader.RegisterFunction(stats);
 
-	config.AddExtensionOption("decide_auto_download",
+	config.AddExtensionOption("amox_auto_download",
 	                          "Download missing models from Hugging Face on first use (SHA-256 verified)",
 	                          LogicalType::BOOLEAN, Value::BOOLEAN(true));
-	ScalarFunctionSet download("decide_download");
+	ScalarFunctionSet download("amox_download");
 	for (auto args : {vector<LogicalType>(), vector<LogicalType> {LogicalType::VARCHAR}}) {
 		ScalarFunction f(args, LogicalType::VARCHAR, DownloadFun);
 		f.SetVolatile();
@@ -760,23 +760,23 @@ static void LoadInternal(ExtensionLoader &loader) {
 	}
 	loader.RegisterFunction(download);
 
-	ScalarFunction state_fn("decide_state", {LogicalType::ANY}, LogicalType::VARCHAR, StateFun);
+	ScalarFunction state_fn("amox_state", {LogicalType::ANY}, LogicalType::VARCHAR, StateFun);
 	state_fn.SetFallible();
 	loader.RegisterFunction(state_fn);
 
-	// FROM t DECIDE (...), decision_choose(q AMONG (...) GIVEN ...), decision_yes_no(q GIVEN ...)
+	// FROM t DECIDE (...), amox_choose(q AMONG (...) GIVEN ...), amox_yes_no(q GIVEN ...)
 	decide_grammar::RegisterDecideGrammar(loader.GetDatabaseInstance());
 }
 
-void DecideExtension::Load(ExtensionLoader &loader) {
+void DecideAmoxExtension::Load(ExtensionLoader &loader) {
 	LoadInternal(loader);
 }
 
-std::string DecideExtension::Name() {
-	return "decide";
+std::string DecideAmoxExtension::Name() {
+	return "decide_amox";
 }
 
-std::string DecideExtension::Version() const {
+std::string DecideAmoxExtension::Version() const {
 	return ExtensionVersion();
 }
 
@@ -784,7 +784,7 @@ std::string DecideExtension::Version() const {
 
 extern "C" {
 
-DUCKDB_CPP_EXTENSION_ENTRY(decide, loader) {
+DUCKDB_CPP_EXTENSION_ENTRY(decide_amox, loader) {
 	duckdb::LoadInternal(loader);
 }
 }

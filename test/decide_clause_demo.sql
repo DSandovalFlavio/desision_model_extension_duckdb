@@ -1,8 +1,8 @@
 -- Demo de la cláusula DECIDE. Desde la raíz del repo:
 --   build/release/duckdb.exe -unsigned -c ".read test/decide_clause_demo.sql"
-LOAD 'build/release/extension/decide/decide.duckdb_extension';
-SET decide_model_dir = 'models';
-SET decide_model = 'onejev-0.8b';
+LOAD 'build/release/extension/decide_amox/decide_amox.duckdb_extension';
+SET amox_model_dir = 'models';
+SET amox_model = 'onejev-0.8b';
 .mode box
 
 CREATE TEMP TABLE comentarios(id INT, canal VARCHAR, texto VARCHAR);
@@ -27,11 +27,11 @@ FROM comentarios DECIDE (
 ORDER BY id;
 
 -- 2) Varias columnas en GIVEN: el estado es un JSON con sangría 2 (formato qev)
-SELECT decide_state(struct_pack(canal := 'twitter', texto := 'Hola "mundo"')) AS estado;
+SELECT amox_state(struct_pack(canal := 'twitter', texto := 'Hola "mundo"')) AS estado;
 
 -- 3) Sintaxis de función con AMONG / GIVEN
-SELECT id, decision_choose('¿Qué sentimiento expresa?' AMONG (positivo, negativo, neutro, mixto) GIVEN canal, texto).choice AS s
+SELECT id, amox_choose('¿Qué sentimiento expresa?' AMONG (positivo, negativo, neutro, mixto) GIVEN canal, texto).choice AS s
 FROM comentarios ORDER BY id;
 
 -- 4) El reescrito no cuesta más: ambas preguntas pasaron por el mismo motor (lotes + caché)
-SELECT decisions, cache_hits, deduplicated, evaluated FROM decide_stats();
+SELECT decisions, cache_hits, deduplicated, evaluated FROM amox_stats();

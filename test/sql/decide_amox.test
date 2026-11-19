@@ -1,0 +1,67 @@
+# name: test/sql/decide_amox.test
+# description: decide_amox extension: model registry, settings, version and tokenizer
+# group: [sql]
+
+statement error
+SELECT amox_version();
+----
+Catalog Error
+
+require decide_amox
+
+# --- version / backends -------------------------------------------------------------------------------------
+query I
+SELECT amox_version() LIKE 'decide_amox % | llama.cpp b12521-6f311d7 | backends: %CPU%';
+----
+true
+
+# --- registry: three OneJev1.6 sizes, 4B is the default -----------------------------------------------------
+query IIIII
+SELECT model, is_default, size, quant, license FROM amox_models() ORDER BY file_mb;
+----
+onejev-0.8b	false	0.8B	Q8_0	Apache-2.0
+onejev-4b	true	4B	Q4_K_M	Apache-2.0
+onejev-9b	false	9B	Q4_K_M	Apache-2.0
+
+query I
+SELECT current_setting('amox_model');
+----
+onejev-4b
+
+query I
+SELECT model FROM amox_models() WHERE is_current;
+----
+onejev-4b
+
+statement ok
+SET amox_model = 'onejev-9b';
+
+query I
+SELECT model FROM amox_models() WHERE is_current;
+----
+onejev-9b
+
+statement error
+SET amox_model = 'gpt-5';
+----
+Unknown amox_model 'gpt-5'
+
+statement ok
+RESET amox_model;
+
+# --- a missing model gives an actionable error (never download from CI) ----------------------------------------
+statement ok
+SET amox_auto_download = false;
+
+statement ok
+SET amox_model_dir = '__no_such_dir__';
+
+statement error
+SELECT amox_tokenize('hola');
+----
+is not downloaded
+
+query I
+SELECT bool_or(downloaded) FROM amox_models();
+----
+false

@@ -17,9 +17,9 @@
 
 namespace decide {
 
-//! llama.cpp is chatty; its log only reaches stderr when DECIDE_VERBOSE is set.
+//! llama.cpp is chatty; its log only reaches stderr when DECIDE_AMOX_VERBOSE is set.
 static void QuietLog(ggml_log_level, const char *text, void *) {
-	if (std::getenv("DECIDE_VERBOSE")) {
+	if (std::getenv("DECIDE_AMOX_VERBOSE")) {
 		fputs(text, stderr);
 	}
 }
@@ -58,7 +58,7 @@ llama_model *Runtime::VocabModel(const std::string &path) {
 	llama_model *model = llama_model_load_from_file(path.c_str(), params);
 	if (!model) {
 		throw std::runtime_error("could not read the GGUF vocabulary from '" + path +
-		                         "' (set DECIDE_VERBOSE=1 for llama.cpp logs)");
+		                         "' (set DECIDE_AMOX_VERBOSE=1 for llama.cpp logs)");
 	}
 	vocab_models_.emplace(path, model);
 	return model;
@@ -150,7 +150,7 @@ void Runtime::EnsureLoaded(const EngineConfig &config) {
 	model_ = llama_model_load_from_file(config.path.c_str(), mparams);
 	if (!model_) {
 		throw std::runtime_error("could not load the model '" + config.path +
-		                         "' (set DECIDE_VERBOSE=1 for llama.cpp logs)");
+		                         "' (set DECIDE_AMOX_VERBOSE=1 for llama.cpp logs)");
 	}
 
 	const int32_t parallel = std::max(1, config.parallel);
@@ -174,8 +174,8 @@ void Runtime::EnsureLoaded(const EngineConfig &config) {
 	if (!ctx_) {
 		llama_model_free(model_);
 		model_ = nullptr;
-		throw std::runtime_error("could not create a llama.cpp context (try a smaller decide_parallel or "
-		                         "decide_batch_tokens, or SET decide_kv_cache = 'q8_0')");
+		throw std::runtime_error("could not create a llama.cpp context (try a smaller amox_parallel or "
+		                         "amox_batch_tokens, or SET amox_kv_cache = 'q8_0')");
 	}
 	n_ctx_ = (int32_t)llama_n_ctx(ctx_);
 
@@ -202,7 +202,7 @@ std::vector<int32_t> Runtime::BuildTokens(const EngineConfig &config, const Deci
 	auto fixed = TokenizeWith(model_, Prompt::RenderWithState(req, std::string())).size();
 	int32_t budget = config.max_tokens - (int32_t)fixed - 4;
 	if (budget <= 0) {
-		throw std::runtime_error("the question and options alone exceed decide_max_tokens");
+		throw std::runtime_error("the question and options alone exceed amox_max_tokens");
 	}
 	auto state_tokens = TokenizeWith(model_, req.state);
 	if ((int32_t)state_tokens.size() > budget) {
@@ -276,7 +276,7 @@ void Runtime::Evaluate(const std::vector<std::vector<int32_t>> &prompts, const s
 			stats_.process_calls++;
 			if (rc != 0) {
 				throw std::runtime_error("llama_process failed with code " + std::to_string(rc) +
-				                         " (try a smaller decide_parallel or decide_batch_tokens)");
+				                         " (try a smaller amox_parallel or amox_batch_tokens)");
 			}
 			for (auto &o : outputs) {
 				const float *logits = llama_get_logits_ith(ctx_, o.second);

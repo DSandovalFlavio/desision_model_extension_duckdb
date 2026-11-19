@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
-# Extension "decide": Jev-style decision models (OneJev1.6 0.8B / 4B / 9B) over llama.cpp, from SQL.
-set(TARGET_NAME decide)
+# Extension "decide_amox": Jev-style decision models (OneJev1.6 0.8B / 4B / 9B) over llama.cpp, from SQL.
+set(TARGET_NAME decide_amox)
 set(EXTENSION_NAME ${TARGET_NAME}_extension)
 set(LOADABLE_EXTENSION_NAME ${TARGET_NAME}_loadable_extension)
 
@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # llama.cpp (pinned submodule third_party/llama.cpp @ b12521), linked statically into the extension.
 # ---------------------------------------------------------------------------------------------------------------
 option(DECIDE_WITH_CUDA "Build the llama.cpp CUDA backend (needs the CUDA Toolkit)" OFF)
-option(DECIDE_NATIVE "Optimise llama.cpp for the CPU of the build machine" ON)
+option(DECIDE_NATIVE "Optimise llama.cpp for the CPU of the build machine (OFF = portable binary, used by CI)" OFF)
 
 set(LLAMA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/llama.cpp)
 set(DECIDE_LLAMA_BUILD "b12521-6f311d7")
@@ -47,7 +47,7 @@ add_subdirectory(${LLAMA_DIR} ${CMAKE_CURRENT_BINARY_DIR}/llama.cpp EXCLUDE_FROM
 # ---------------------------------------------------------------------------------------------------------------
 include_directories(src/include ${LLAMA_DIR}/include ${LLAMA_DIR}/ggml/include)
 
-set(EXTENSION_SOURCES src/decide_extension.cpp src/decide_models.cpp src/decide_prompt.cpp src/decide_runtime.cpp src/decide_grammar.cpp src/decide_store.cpp)
+set(EXTENSION_SOURCES src/decide_amox_extension.cpp src/decide_models.cpp src/decide_prompt.cpp src/decide_runtime.cpp src/decide_grammar.cpp src/decide_store.cpp)
 
 build_static_extension(${TARGET_NAME} ${EXTENSION_SOURCES})
 build_loadable_extension(${TARGET_NAME} " " ${EXTENSION_SOURCES})

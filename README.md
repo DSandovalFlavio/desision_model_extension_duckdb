@@ -1,4 +1,4 @@
-# decide: modelos de decisión en DuckDB
+# decide_amox: modelos de decisión en DuckDB
 
 Extensión de **DuckDB 2.0** para clasificar texto desde SQL con modelos de decisión tipo Jev, en local, usando la familia **OneJev1.6** (Apache‑2.0) sobre llama.cpp. Entra un texto, una pregunta y unas opciones; sale una probabilidad por opción en una sola pasada, sin generar texto.
 
@@ -11,7 +11,7 @@ Extensión de **DuckDB 2.0** para clasificar texto desde SQL con modelos de deci
 Evaluación en [eval/RESULTS.md](eval/RESULTS.md) · plan en [PLAN.md](PLAN.md).
 
 > **Estado: fase 2.**
-> - Clasificación funcionando: `decision_choose`, `decision_yes_no` y la cláusula `DECIDE`, con lotes multisecuencia, deduplicación y caché LRU.
+> - Clasificación funcionando: `amox_choose`, `amox_yes_no` y la cláusula `DECIDE`, con lotes multisecuencia, deduplicación y caché LRU.
 > - Los modelos se descargan solos la primera vez, verificados con SHA‑256.
 >
 > **Verificado:** Windows x64 con MSVC 2022, compilación **solo CPU**, cargada en el DuckDB **2.0.0 oficial**.
@@ -34,11 +34,11 @@ Evaluación en [eval/RESULTS.md](eval/RESULTS.md) · plan en [PLAN.md](PLAN.md).
 **2. Clonar con los submódulos** (DuckDB v2.0.0, extension-ci-tools y llama.cpp b12521, fijados):
 
 ```powershell
-git clone https://github.com/<tu-usuario>/<tu-repo>.git decide
+git clone https://github.com/DSandovalFlavio/desision_model_extension_duckdb.git decide_amox
 ```
 
 ```powershell
-cd decide
+cd decide_amox
 ```
 
 ```powershell
@@ -61,10 +61,10 @@ duckdb -unsigned
 ```
 
 ```sql
-LOAD 'build/release/extension/decide/decide.duckdb_extension';
-SELECT decide_version();          -- con CUDA debe listar "CUDA" en backends
-SELECT decide_download();         -- baja onejev-4b (2.7 GB) a ~/.duckdb/decide/models
-SELECT decision_yes_no('Pierde 15 kilos en 7 días sin dieta', '¿Este anuncio infringe las políticas de Google Ads?');
+LOAD 'build/release/extension/decide_amox/decide_amox.duckdb_extension';
+SELECT amox_version();          -- con CUDA debe listar "CUDA" en backends
+SELECT amox_download();         -- baja onejev-4b (2.7 GB) a ~/.duckdb/decide_amox/models
+SELECT amox_yes_no('Pierde 15 kilos en 7 días sin dieta', '¿Este anuncio infringe las políticas de Google Ads?');
 ```
 
 ## Cláusula DECIDE
@@ -88,21 +88,21 @@ FROM comentarios DECIDE (
   - `ASK … AS y` añade `y` (BOOLEAN, p ≥ 0.5), `y_confidence` y `y_probabilities` con `yes`/`no`.
 - **Qué lee el modelo (`GIVEN`):**
   - Con una columna, el modelo lee su texto tal cual.
-  - Con varias, `GIVEN canal, texto` las convierte en un objeto JSON con sangría 2, el formato con el que se entrenó OneJev. Lo puedes ver con `decide_state(...)`.
-- **Forma de función:** `decision_choose('pregunta' AMONG (a, b, c) GIVEN col1, col2)` y `decision_yes_no('pregunta' GIVEN col)`.
-- **Mismo motor:** la cláusula se reescribe a `decision_choose` / `decision_yes_no`, así que usa los mismos lotes y la misma caché.
+  - Con varias, `GIVEN canal, texto` las convierte en un objeto JSON con sangría 2, el formato con el que se entrenó OneJev. Lo puedes ver con `amox_state(...)`.
+- **Forma de función:** `amox_choose('pregunta' AMONG (a, b, c) GIVEN col1, col2)` y `amox_yes_no('pregunta' GIVEN col)`.
+- **Mismo motor:** la cláusula se reescribe a `amox_choose` / `amox_yes_no`, así que usa los mismos lotes y la misma caché.
 - **Activación:** la gramática se activa en las conexiones abiertas después del `LOAD`. En la conexión que ejecutó `LOAD`, se activa a partir de la consulta siguiente, así que `LOAD` y `DECIDE` no pueden ir en la misma cadena `-c`.
 
 ## Uso
 
 ```sql
 -- iniciar DuckDB 2.0.0 con: duckdb -unsigned
-LOAD 'build/release/extension/decide/decide.duckdb_extension';
-SET decide_model_dir = 'C:/modelos';     -- busca <dir>/<archivo>.gguf o <dir>/<modelo>/<archivo>.gguf
+LOAD 'build/release/extension/decide_amox/decide_amox.duckdb_extension';
+SET amox_model_dir = 'C:/modelos';     -- busca <dir>/<archivo>.gguf o <dir>/<modelo>/<archivo>.gguf
 
 -- elegir una opción: MAP nombre -> descripción (recomendado) o lista de nombres
 SELECT texto,
-       decision_choose(texto, '¿Qué sentimiento expresa este comentario sobre la marca?', MAP {
+       amox_choose(texto, '¿Qué sentimiento expresa este comentario sobre la marca?', MAP {
            'positivo': 'Opinión favorable: satisfacción, elogio o recomendación',
            'negativo': 'Queja, enojo, decepción o crítica (incluye sarcasmo)',
            'neutro':   'Pregunta, dato o comentario informativo',
@@ -111,49 +111,49 @@ FROM comentarios;
 -- s.choice, s.confidence, s.probabilities['negativo']
 
 -- sí/no: probabilidad de "sí"
-SELECT decision_yes_no(anuncio, '¿Este anuncio infringe las políticas de Google Ads?') AS p_infringe FROM anuncios;
+SELECT amox_yes_no(anuncio, '¿Este anuncio infringe las políticas de Google Ads?') AS p_infringe FROM anuncios;
 
 -- modelo por consulta o por sesión
-SELECT decision_choose(texto, 'pregunta', ['a', 'b'], 'onejev-0.8b') FROM t;
-SET decide_model = 'onejev-9b';          -- 'onejev-0.8b' | 'onejev-4b' (por defecto) | 'onejev-9b'
+SELECT amox_choose(texto, 'pregunta', ['a', 'b'], 'onejev-0.8b') FROM t;
+SET amox_model = 'onejev-9b';          -- 'onejev-0.8b' | 'onejev-4b' (por defecto) | 'onejev-9b'
 
 -- utilidades
-SELECT * FROM decide_models();           -- modelos, descargados, cargados
-SELECT * FROM decide_stats();            -- decisiones, aciertos de caché, tokens/s, modelo cargado
-SELECT decide_prompt(texto, 'pregunta', ['a', 'b']);   -- el prompt exacto que ve el modelo
-SELECT decide_tokenize('hola');
-SELECT decide_clear_cache();
+SELECT * FROM amox_models();           -- modelos, descargados, cargados
+SELECT * FROM amox_stats();            -- decisiones, aciertos de caché, tokens/s, modelo cargado
+SELECT amox_prompt(texto, 'pregunta', ['a', 'b']);   -- el prompt exacto que ve el modelo
+SELECT amox_tokenize('hola');
+SELECT amox_clear_cache();
 ```
 
 | Ajuste | Por defecto | Qué hace |
 |---|---|---|
-| `decide_model` | `onejev-4b` | Modelo de la sesión |
-| `decide_model_dir` | `~/.duckdb/decide/models` | Carpeta donde se buscan los GGUF |
-| `decide_model_path` | vacío | Ruta explícita del GGUF del modelo actual |
-| `decide_parallel` | 16 | Textos evaluados a la vez por llamada a la GPU |
-| `decide_batch_tokens` | 4096 | Tokens por llamada; también es el tamaño de la caché KV compartida |
-| `decide_gpu_layers` | -1 | Capas en GPU (-1 = todas, 0 = solo CPU) |
-| `decide_kv_cache` | `f16` | `q8_0` usa menos VRAM (útil con el 9B y mucho paralelismo) |
-| `decide_threads` | 0 | Hilos de CPU para llama.cpp (0 = todos) |
-| `decide_max_tokens` | 1024 | Límite por prompt; los textos más largos se truncan |
-| `decide_cache_size` | 100000 | Respuestas guardadas en la caché LRU (0 = desactivada) |
-| `decide_auto_download` | `true` | Descarga los modelos que falten desde Hugging Face |
+| `amox_model` | `onejev-4b` | Modelo de la sesión |
+| `amox_model_dir` | `~/.duckdb/decide_amox/models` | Carpeta donde se buscan los GGUF |
+| `amox_model_path` | vacío | Ruta explícita del GGUF del modelo actual |
+| `amox_parallel` | 16 | Textos evaluados a la vez por llamada a la GPU |
+| `amox_batch_tokens` | 4096 | Tokens por llamada; también es el tamaño de la caché KV compartida |
+| `amox_gpu_layers` | -1 | Capas en GPU (-1 = todas, 0 = solo CPU) |
+| `amox_kv_cache` | `f16` | `q8_0` usa menos VRAM (útil con el 9B y mucho paralelismo) |
+| `amox_threads` | 0 | Hilos de CPU para llama.cpp (0 = todos) |
+| `amox_max_tokens` | 1024 | Límite por prompt; los textos más largos se truncan |
+| `amox_cache_size` | 100000 | Respuestas guardadas en la caché LRU (0 = desactivada) |
+| `amox_auto_download` | `true` | Descarga los modelos que falten desde Hugging Face |
 
 **Consejo de rendimiento:** la pregunta y las descripciones de las opciones se procesan en cada fila y suelen pesar más que el texto (en los anuncios son unos 259 tokens frente a 25 del texto). Descripciones breves aceleran mucho la clasificación.
 
 ## Modelos: descarga automática
 
-- **Cuándo se descarga:** la primera consulta que usa un modelo lo descarga de Hugging Face a `decide_model_dir`, en `<dir>/<modelo>/<archivo>.gguf`. Por defecto la carpeta es `~/.duckdb/decide/models`.
+- **Cuándo se descarga:** la primera consulta que usa un modelo lo descarga de Hugging Face a `amox_model_dir`, en `<dir>/<modelo>/<archivo>.gguf`. Por defecto la carpeta es `~/.duckdb/decide_amox/models`.
 - **Cómo se descarga:** a un archivo temporal, calculando el SHA‑256 mientras llega. Solo se renombra al nombre final si el hash coincide con el que lleva fijado la extensión. El progreso aparece en la consola.
 - **Para no esperar en la primera consulta**, descárgalo antes:
   ```sql
-  SELECT decide_download('onejev-4b');  -- o sin argumento: el modelo de la sesión
+  SELECT amox_download('onejev-4b');  -- o sin argumento: el modelo de la sesión
   ```
 - **Archivos que ya tengas:** se usan si están en esa carpeta (`<dir>/<archivo>` o `<dir>/<modelo>/<archivo>`).
   - La primera vez se comprueba su hash y se deja un sello `.verified` junto al archivo, con tamaño y fecha. Las siguientes cargas no vuelven a calcular el hash.
   - Si el archivo está incompleto o es distinto, el error lo dice y no se usa.
 - **Requisito:** necesita la extensión `httpfs`, que DuckDB instala y carga sola.
-- **Sin conexión:** `SET decide_auto_download = false` y apunta `decide_model_dir` (o `decide_model_path`) a tus archivos.
+- **Sin conexión:** `SET amox_auto_download = false` y apunta `amox_model_dir` (o `amox_model_path`) a tus archivos.
 
 | Modelo | Tamaño de descarga |
 |---|---|
@@ -161,12 +161,64 @@ SELECT decide_clear_cache();
 | `onejev-4b` | 2.7 GB |
 | `onejev-9b` | 5.6 GB |
 
+## Instalación sin internet (equipos sin acceso a Hugging Face)
+
+Los modelos **no se compilan**: los `.gguf` ya están listos y se pueden copiar a cualquier equipo. Solo la extensión se compila, y también se puede compilar una vez y repartir.
+
+### 1. Repartir los modelos (Drive, USB, carpeta de red)
+
+Copia los GGUF desde un equipo que ya los tenga (`~/.duckdb/decide_amox/models/`), sin los archivos `.verified`:
+
+```
+modelos/
+  LEEME.txt                                   <- "OneJev1.6 (OmniJev), Apache-2.0" + enlace a la licencia
+  onejev-0.8b/OneJev1.6-0.8B.Q8_0.gguf
+  onejev-4b/OneJev1.6-4B.Q4_K_M.gguf
+  onejev-9b/OneJev1.6-9B.Q4_K_M.gguf
+```
+
+- **Licencia:** los pesos son Apache‑2.0, que permite redistribuirlos. Incluye el aviso de licencia y atribución en `LEEME.txt`.
+- **Verificación:** en el equipo de destino, la extensión comprueba el **SHA‑256** de cada archivo la primera vez. Una copia corrupta o incompleta da un error en lugar de resultados erróneos.
+- **Google Drive para escritorio:** se puede apuntar a la carpeta sincronizada, pero márcala como **"Disponible sin conexión"**. Un archivo que no está descargado del todo no carga.
+
+### 2. Repartir la extensión compilada
+
+Compílala con `-Portable`. Sin esa opción, llama.cpp se optimiza para el CPU de la máquina que compila y puede fallar en otro procesador:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1 -Cuda -CudaArch 89 -Portable
+```
+
+Reparte `build/release/extension/decide_amox/decide_amox.duckdb_extension`. Ten en cuenta:
+- **Arquitectura de GPU:** `-CudaArch` debe cubrir la GPU de cada equipo. Usa `89` para RTX 40xx y RTX Ada, `86` para RTX 30xx, `75` para RTX 20xx y `61` para Pascal (con CUDA 12.x). Para varias a la vez: `-CudaArch "75;86;89"`.
+- **Equipos sin GPU NVIDIA:** reparte también un build sin `-Cuda`.
+- **DLL de CUDA:** el equipo de destino probablemente necesite `cudart64_*.dll`, `cublas64_*.dll` y `cublasLt64_*.dll` (sin verificar todavía). Cópialas desde `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v1x.y\bin` junto a `duckdb.exe`, o instala el CUDA Toolkit.
+- **DuckDB:** todos deben usar DuckDB CLI **2.0.0**.
+
+### 3. Configurar cada equipo una sola vez
+
+Crea `C:\Users\<usuario>\.duckdbrc` (DuckDB lo ejecuta al iniciar):
+
+```sql
+LOAD 'C:/decide/decide.duckdb_extension';
+SET amox_auto_download = false;    -- nunca intentar Hugging Face
+SET amox_model_dir = 'C:/modelos'; -- carpeta con onejev-*/...gguf
+```
+
+Después, cada vez:
+
+```powershell
+duckdb -unsigned
+```
+
+Mientras la extensión no esté publicada en el repositorio de *community extensions* de DuckDB, hay que iniciar con `-unsigned`, o con `allow_unsigned_extensions` en otros clientes.
+
 ## Detalles de compilación
 
 - **Script:** `scripts/build_windows.ps1`. Busca Visual Studio 2022 con `vswhere`, carga `vcvars64` y compila DuckDB v2.0.0 junto con la extensión usando Ninja.
   - Opciones: `-Cuda`, `-CudaArch <sm>`, `-Portable` (sin optimizar para el CPU de la máquina que compila, para repartir el binario a otros equipos), `-Config debug|release` y `-Jobs N`.
 - **Salidas:**
-  - `build/release/extension/decide/decide.duckdb_extension`: la extensión cargable. Necesita DuckDB **2.0.0** exacto, iniciado con `-unsigned`.
+  - `build/release/extension/decide_amox/decide_amox.duckdb_extension`: la extensión cargable. Necesita DuckDB **2.0.0** exacto, iniciado con `-unsigned`.
   - `build/release/duckdb.exe`: un DuckDB 2.0.0 compilado aquí. La extensión **no** va incluida y se carga con `LOAD` igual que en el oficial.
 - **Versión:** el build usa la versión exacta `v2.0.0` y descarga extensiones (por ejemplo, `httpfs`) del repositorio oficial. Así la extensión carga en el CLI oficial.
 - **Linux/macOS:** `make release` (o `GEN=ninja make release`). Aún sin probar.

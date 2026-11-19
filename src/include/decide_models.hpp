@@ -9,7 +9,7 @@ namespace decide {
 //! One decision model the extension knows how to run. All OneJev1.6 sizes share architecture (qwen35),
 //! tokenizer, chat template, prompt (qev-labels-v2) and readout (option-letter logits), so a model is just a file.
 struct ModelSpec {
-	const char *id;         // name used in SQL: SET decide_model = '<id>'
+	const char *id;         // name used in SQL: SET amox_model = '<id>'
 	const char *family;     // e.g. "OneJev1.6"
 	const char *size_label; // "0.8B", "4B", "9B"
 	const char *quant;      // GGUF quantisation
