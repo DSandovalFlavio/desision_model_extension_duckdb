@@ -1,15 +1,14 @@
-# build
-build/
+# build (solo en la raíz: third_party/llama.cpp tiene carpetas propias con estos nombres)
+/build/
 duckdb_unittest_tempdir/
 testext
 # datos locales pesados
-models/
-tools/
-.venv/
+/models/
+/tools/
+/.venv/
 eval/results.duckdb
 eval/results.duckdb.wal
-eval/run_all.log
 __pycache__/
-.claude/
+/.claude/
 *.log
 test/parity/ext_*.json

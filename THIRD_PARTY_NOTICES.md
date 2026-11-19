@@ -19,7 +19,7 @@ El formato de prompt `qev-labels-v2` (src/decide_prompt.cpp) y la lectura por le
 
 ## llama.cpp (MIT) y DuckDB (MIT)
 
-Submódulos `third_party/llama.cpp` y `duckdb`, con sus propias licencias.
+`third_party/llama.cpp` es una copia parcial de llama.cpp b12521 (MIT, ver `third_party/llama.cpp/LICENSE`); `duckdb` es un submódulo (MIT).
 
 ## NVIDIA CUDA runtime (zips `cuda12` de los Releases)
 

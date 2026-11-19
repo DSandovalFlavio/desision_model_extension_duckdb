@@ -84,4 +84,20 @@ Para CUDA en Linux: `EXT_FLAGS="-DDECIDE_WITH_CUDA=ON" GEN=ninja make release`. 
 | `src/decide_grammar.cpp` | Cláusula `DECIDE` (gramática PEG) |
 | `src/decide_store.cpp` | Descarga con `httpfs`, SHA‑256, archivo temporal + rename y sello `.verified` |
 | `src/decide_models.cpp` | Los 3 modelos con URL, tamaño y SHA‑256 fijados |
-| `third_party/llama.cpp`, `duckdb`, `extension-ci-tools` | Submódulos fijados: b12521, v2.0.0 y v2.0-cyanoptera |
+| `third_party/llama.cpp` | Copia **incluida** (no es un submódulo) de llama.cpp b12521: solo CMake, `include/`, `src/`, `vendor/` y los backends CPU, BLAS, Metal y CUDA. Ver `VENDORED.md` y la sección "Actualizar llama.cpp" |
+| `duckdb`, `extension-ci-tools` | Submódulos fijados: v2.0.0 y v2.0-cyanoptera |
+
+## Actualizar llama.cpp
+
+`third_party/llama.cpp` es una copia parcial, no un submódulo: el árbol completo de llama.cpp tiene rutas más largas que el límite de Windows (`ui/…`), y eso rompe el checkout con submódulos en los runners de Windows del CI de DuckDB. Para cambiar de versión:
+
+```bash
+git clone --depth 1 --branch <tag> https://github.com/ggml-org/llama.cpp /tmp/llama.cpp
+```
+
+```bash
+python scripts/vendor_llama_cpp.py /tmp/llama.cpp <tag>
+```
+
+Después, actualiza `DECIDE_LLAMA_BUILD` en `CMakeLists.txt`, recompila y repite las pruebas de paridad (`test/parity/`).
+

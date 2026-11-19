@@ -34,7 +34,8 @@ El usuario escribe en español; responde en español. El uso es **comercial**: s
   - Accesores de vectores de solo lectura por defecto: `FlatVector::GetDataMutable`, `ValidityMutable`, `ListVector::GetChildMutable`.
   - Las funciones dentro de un `FunctionSet` son inmutables: fija `SetVolatile`/`SetFallible` antes de `AddFunction`.
   - Los binds de tablas usan `vector<Identifier>`.
-- **llama.cpp b12521:**
+- **llama.cpp b12521 está incluido como copia parcial**, no como submódulo, por las rutas largas de su `ui/` en Windows. Para actualizarlo usa `scripts/vendor_llama_cpp.py` y no edites `third_party/llama.cpp` a mano.
+- **API de llama.cpp b12521:**
   - Usa `llama_batch_ext_*` + `llama_process`; `llama_batch_init`/`llama_decode` están obsoletas.
   - El GGUF de OneJev declara una capa MTP que llama.cpp antiguo no carga.
   - Los objetivos estáticos (`llama ggml ggml-base ggml-cpu` y, con CUDA, `ggml-cuda`) deben estar en `install(EXPORT DuckDBExports)`.
