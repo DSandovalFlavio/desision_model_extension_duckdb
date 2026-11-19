@@ -58,10 +58,13 @@ foreach(T ${EXTENSION_NAME} ${LOADABLE_EXTENSION_NAME})
 endforeach()
 
 # DuckDB exports every static extension target; the static llama.cpp libraries it links must be in the same set.
-set(DECIDE_LLAMA_TARGETS llama ggml ggml-base ggml-cpu)
-if(DECIDE_WITH_CUDA)
-  list(APPEND DECIDE_LLAMA_TARGETS ggml-cuda)
-endif()
+# Backends depend on the platform (CUDA if requested, Metal and BLAS on macOS), so export whichever exist.
+set(DECIDE_LLAMA_TARGETS llama ggml ggml-base)
+foreach(T ggml-cpu ggml-blas ggml-metal ggml-cuda)
+  if(TARGET ${T})
+    list(APPEND DECIDE_LLAMA_TARGETS ${T})
+  endif()
+endforeach()
 
 install(
   TARGETS ${EXTENSION_NAME} ${DECIDE_LLAMA_TARGETS}
