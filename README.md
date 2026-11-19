@@ -136,7 +136,13 @@ SELECT * FROM amox_models();                                   -- descargados, c
 
 ## Estado
 
-Versión **0.1.0**, la primera publicada. Probada en Windows x64 con DuckDB 2.0.0 oficial (CPU), con paridad exacta frente a la implementación de referencia de OneJev. El resto de plataformas y la variante CUDA las compila y prueba el CI; el estado actual se ve en los badges de arriba.
+Versión **0.1.0**, la primera publicada.
+
+- **Comprobado:**
+  - El CI compila y pasa las pruebas en Linux (amd64 y arm64), macOS (arm64) y Windows (amd64).
+  - El zip de Windows generado por el CI se probó con el DuckDB 2.0.0 oficial.
+  - Hay paridad exacta frente a la implementación de referencia de OneJev: prompts idénticos y mismas predicciones.
+- **Estado actual de cada build:** en los badges de arriba.
 
 ## Licencias
 

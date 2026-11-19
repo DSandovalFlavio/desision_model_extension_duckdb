@@ -50,7 +50,15 @@ El usuario escribe en español; responde en español. El uso es **comercial**: s
 ## Estado y siguientes pasos
 
 - **Verificado en local:** Windows x64 con el DuckDB 2.0.0 oficial (CPU), paridad de prompts 226/226, paridad de predicciones, `DECIDE`, descarga y caché.
-- **Pendiente de verificar en el CI:** builds de Linux y macOS, `test/sql/*.test` con el runner y la variante `cuda12`. Revisa los runs de Actions antes de dar algo por hecho.
+- **Verificado en el CI (19‑nov‑2026):**
+  - El *Main Extension Distribution Pipeline* compila y pasa los 3 `test/sql/*.test` en `linux_amd64`, `linux_arm64`, `osx_arm64` y `windows_amd64`.
+  - El zip `cpu` de *Release* funciona con el DuckDB 2.0.0 oficial.
+  - Revisa siempre el run más reciente de Actions antes de dar algo por hecho.
+- **Problemas del CI ya resueltos (no repetir):**
+  - Rutas largas de llama.cpp en Windows: por eso llama.cpp está incluido como copia parcial.
+  - Falta de `vcpkg.json`.
+  - Exportación de `ggml-metal`/`ggml-blas` en macOS.
+  - Paso de parámetros por arreglo en PowerShell: usar splatting con tabla hash.
 - **Equipos del usuario:**
   - Laptop: i9‑13900H, 32 GB, RTX 2000 Ada 8 GB (`sm_89`), driver con CUDA 13.2. Usa el zip `cuda12` del release.
   - PC del hermano: GTX 1050 Ti 4 GB (`sm_61`). Mismo zip, con el 0.8B o el 4B y `amox_parallel` bajo.
