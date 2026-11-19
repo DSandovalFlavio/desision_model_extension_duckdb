@@ -20,3 +20,7 @@ El formato de prompt `qev-labels-v2` (src/decide_prompt.cpp) y la lectura por le
 ## llama.cpp (MIT) y DuckDB (MIT)
 
 Submódulos `third_party/llama.cpp` y `duckdb`, con sus propias licencias.
+
+## NVIDIA CUDA runtime (zips `cuda12` de los Releases)
+
+Los zips `cuda12` incluyen `cudart64_12.dll`, `cublas64_12.dll` y `cublasLt64_12.dll`, distribuidos bajo el [NVIDIA CUDA Toolkit EULA](https://docs.nvidia.com/cuda/eula/) (componentes redistribuibles, Attachment A). No forman parte del código de este repositorio.

@@ -1,5 +1,5 @@
 -- Prueba de humo de la fase 1. Desde la raíz del repo:
---   build/release/duckdb.exe -unsigned -c ".read test/smoke_phase1.sql"
+--   build/release/duckdb.exe -unsigned -c ".read test/manual/smoke.sql"
 .mode box
 LOAD 'build/release/extension/decide_amox/decide_amox.duckdb_extension';
 SELECT amox_version() AS version;

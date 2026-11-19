@@ -60,7 +60,7 @@ $flags = @(
 if ($Cuda -and $CudaArch) { $flags += "-DCMAKE_CUDA_ARCHITECTURES=$CudaArch" }
 
 $jobsArg = if ($Jobs -gt 0) { "-j $Jobs" } else { "" }
-$flagsText = ($flags | ForEach-Object { if ($_ -match ' ') { "`"$_`"" } else { $_ } }) -join ' '
+$flagsText = ($flags | ForEach-Object { if ($_ -match '[ ;]') { "`"$_`"" } else { $_ } }) -join ' '
 $vsInstaller = Split-Path -Parent $vswhere   # vcvars64.bat invoca vswhere.exe y lo busca en el PATH
 # Un .bat con una instrucción por línea: en una sola línea, cmd expande %PATH% antes de que vcvars lo cambie.
 $bat = Join-Path ([IO.Path]::GetTempPath()) "decide_amox_build_$PID.bat"

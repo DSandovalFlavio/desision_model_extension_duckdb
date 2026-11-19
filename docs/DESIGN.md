@@ -21,7 +21,7 @@
   | **`onejev-4b`** (por defecto) | `mradermacher/OneJev1.6-4B-GGUF` · Q4_K_M | 2.7 GB | **96.0 %** | Equilibrio calidad/velocidad |
   | `onejev-9b` | `mradermacher/OneJev1.6-9B-GGUF` · Q4_K_M | 5.6 GB | 100 % en los 95 anuncios que alcanzó a evaluar (el 4B: 94.7 % en esos mismos) | Máxima calidad; cabe en 8 GB de VRAM |
 
-  Referencias medidas en el mismo set (226 textos): Qwen3.5‑4B sin ajustar 90.7 %, vela3‑fast‑ml 62.4 % y Qwen3.5‑0.8B sin ajustar 51.8 %. Detalle completo en [eval/RESULTS.md](eval/RESULTS.md).
+  Referencias medidas en el mismo set (226 textos): Qwen3.5‑4B sin ajustar 90.7 %, vela3‑fast‑ml 62.4 % y Qwen3.5‑0.8B sin ajustar 51.8 %. Detalle completo en [eval/RESULTS.md](../eval/RESULTS.md).
 - **Umbral de confianza:** 7 de los 9 errores del 4B tienen una confianza ≤ 0.62. Conviene exponer `confidence` y recomendar revisión manual por debajo de ~0.65.
 - **Un solo backend: llama.cpp** (CUDA, con CPU como alternativa). Los tres tamaños comparten arquitectura (qwen35), tokenizador, plantilla de chat, prompt (`qev-labels-v2`) y lectura (logits de las letras de opción). Por eso cambiar de modelo es solo cambiar de archivo GGUF.
   - La fase 0 comprobó esta lectura con llama.cpp b12521: funciona.

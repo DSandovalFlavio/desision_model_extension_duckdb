@@ -1,0 +1,94 @@
+#
+# Windows builds attached to every GitHub Release, so nobody has to compile:
+#   decide_amox-<tag>-windows_amd64-cuda12.zip   NVIDIA GPU (Pascal GTX 10xx .. Ada/RTX 40xx), CUDA DLLs included
+#   decide_amox-<tag>-windows_amd64-cpu.zip      any x64 CPU
+# These binaries are not signed by DuckDB: load them with `duckdb -unsigned`. The signed (CPU) build comes from
+# DuckDB community extensions (INSTALL decide_amox FROM community) once the descriptor is merged.
+#
+# Run it by hand (Actions > Release > Run workflow) to test a build without publishing: the zips are then kept as
+# workflow artifacts instead of release assets.
+#
+name: Release
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    name: Windows ${{ matrix.variant }}
+    runs-on: windows-2022
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: cpu
+          - variant: cuda12
+            # Pascal (GTX 10xx), Turing (RTX 20xx), Ampere (RTX 30xx), Ada (RTX 40xx / RTX 2000 Ada)
+            cuda_archs: "61;75;86;89"
+    env:
+      TAG: ${{ github.event.release.tag_name || format('dev-{0}', github.sha) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 1
+
+      - name: Install CUDA Toolkit 12.4
+        if: matrix.variant == 'cuda12'
+        uses: Jimver/cuda-toolkit@v0.2.21
+        with:
+          cuda: "12.4.1"
+          method: network
+          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "thrust", "visual_studio_integration"]'
+
+      - name: Build
+        shell: pwsh
+        run: |
+          $cudaArgs = @()
+          if ("${{ matrix.variant }}" -eq "cuda12") { $cudaArgs = @("-Cuda", "-CudaArch", "${{ matrix.cuda_archs }}") }
+          ./scripts/build_windows.ps1 -Portable @cudaArgs
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $ext = "build/release/extension/decide_amox/decide_amox.duckdb_extension"
+          if (-not (Test-Path $ext)) { throw "extension not built" }
+          $name = "decide_amox-$env:TAG-windows_amd64-${{ matrix.variant }}"
+          $out = "dist/$name"
+          New-Item -ItemType Directory -Force $out | Out-Null
+          Copy-Item $ext, LICENSE, THIRD_PARTY_NOTICES.md $out
+          Copy-Item docs/INSTALL_RELEASE.md "$out/LEEME.md"
+
+          # Show what the extension links against (documents which DLLs a target machine needs).
+          $dumpbin = Get-ChildItem "${env:ProgramFiles}\Microsoft Visual Studio\2022\*\VC\Tools\MSVC\*\bin\Hostx64\x64\dumpbin.exe" | Select-Object -First 1
+          if ($dumpbin) { & $dumpbin.FullName /dependents $ext }
+
+          if ("${{ matrix.variant }}" -eq "cuda12") {
+            # CUDA runtime + cuBLAS, redistributable under the NVIDIA CUDA EULA (Attachment A).
+            foreach ($dll in "cudart64_12.dll", "cublas64_12.dll", "cublasLt64_12.dll") {
+              Copy-Item (Join-Path $env:CUDA_PATH "bin/$dll") $out
+            }
+          }
+          Compress-Archive -Path "$out/*" -DestinationPath "dist/$name.zip"
+          (Get-FileHash "dist/$name.zip" -Algorithm SHA256).Hash.ToLower() + "  $name.zip" | Out-File -Encoding ascii "dist/$name.zip.sha256"
+          Get-ChildItem dist
+
+      - name: Upload to the release
+        if: github.event_name == 'release'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$env:TAG" (Get-ChildItem dist/*.zip, dist/*.sha256).FullName --clobber
+
+      - name: Keep as workflow artifact (manual runs)
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: decide_amox-windows_amd64-${{ matrix.variant }}
+          path: dist/*.zip*
+          retention-days: 14

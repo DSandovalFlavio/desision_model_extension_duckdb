@@ -1,88 +1,59 @@
 # decide_amox: guía para agentes
 
-Extensión de **DuckDB 2.0.0** (C++17) que clasifica texto desde SQL con modelos de decisión **OneJev1.6** (0.8B / **4B por defecto** / 9B, GGUF, Apache‑2.0) sobre **llama.cpp b12521**, enlazado estáticamente. Una pasada por decisión: probabilidad = softmax de los logits de las letras A, B, C… del prompt `qev-labels-v2`.
-
-- Uso y compilación: [README.md](README.md).
-- Decisiones, mediciones y pendientes: [PLAN.md](PLAN.md).
-- Evaluación: [eval/RESULTS.md](eval/RESULTS.md).
+Extensión de **DuckDB 2.0.0** (C++17) que clasifica texto desde SQL con modelos de decisión **OneJev1.6** (0.8B / **4B por defecto** / 9B, GGUF, Apache‑2.0) sobre **llama.cpp b12521**, enlazado estáticamente. Una pasada por decisión: la probabilidad es el softmax de los logits de las letras A, B, C… del prompt `qev-labels-v2`.
 
 El usuario escribe en español; responde en español. El uso es **comercial**: solo modelos con licencia permisiva (StartLux y openjev son CC BY‑NC y están descartados).
 
-## Mapa del código
+## Dónde está cada cosa
 
-| Archivo | Qué hace |
+| Documento | Para quién |
 |---|---|
-| `src/decide_amox_extension.cpp` | Registro: ajustes `decide_*`, funciones SQL y `amox_state` (JSON con sangría 2 al estilo Python) |
-| `src/decide_runtime.cpp` | Motor llama.cpp: carga del modelo, lotes multisecuencia (`llama_batch_ext` + `llama_process`), logits solo en el último token, deduplicación, caché LRU, estadísticas |
-| `src/decide_prompt.cpp` | Prompt `qev-labels-v2` + plantilla de chat Qwen3.5 sin razonamiento. **Debe coincidir byte a byte** con `eval/run_eval.py` y con `llama-server /apply-template` |
-| `src/decide_grammar.cpp` | Cláusula `DECIDE` (gramática PEG), port de altertable-ai/duckdb-decide_onnx (MIT) |
-| `src/decide_store.cpp` | Descarga automática vía `httpfs`, SHA‑256 propio, archivo temporal + rename, sello `.verified` |
-| `src/decide_models.cpp` | Registro de los 3 modelos: repo de HF, archivo, tamaño y sha256 fijados |
-| `scripts/build_windows.ps1` | Compilación en Windows (MSVC 2022 + Ninja, `-Cuda -CudaArch N`) |
-| `eval/` | Harness Python de la fase 0 (llama-server + vela3 ONNX) y set sintético `es_marketing_v1` |
+| [README.md](README.md) | Usuarios: instalar desde los Releases o Community, primeros pasos |
+| [docs/REFERENCE.md](docs/REFERENCE.md) | Referencia SQL completa (funciones, `DECIDE`, ajustes) |
+| [docs/OFFLINE.md](docs/OFFLINE.md) | Repartir extensión y modelos sin internet (Drive/USB) |
+| [docs/BUILDING.md](docs/BUILDING.md) | Compilar, workflows de CI/release, publicar versiones, pruebas, mapa del código |
+| [docs/PUBLISHING.md](docs/PUBLISHING.md) | DuckDB Community Extensions + borrador de `description.yml` |
+| [docs/EVALUATION.md](docs/EVALUATION.md), [eval/RESULTS.md](eval/RESULTS.md) | Por qué OneJev 4B y cómo reproducir la evaluación |
+| [docs/DESIGN.md](docs/DESIGN.md) | Historial de investigación y decisiones; usa los nombres antiguos (`decision_*`, `decide_*`) |
+| [CHANGELOG.md](CHANGELOG.md), [SECURITY.md](SECURITY.md) | Versiones y modelo de seguridad |
 
-## Compilar y probar (Windows)
+**Para usarla no se compila:** los binarios salen de GitHub Actions. [`MainDistributionPipeline.yml`](.github/workflows/MainDistributionPipeline.yml) hace el CI CPU multiplataforma con el pipeline oficial de DuckDB, y [`Release.yml`](.github/workflows/Release.yml) genera los zips `cpu` y `cuda12` de Windows en cada Release. Solo se compila en local para cambiar el código.
 
-```powershell
-git submodule update --init --depth 1
-```
+## Nombres
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1 -Cuda -CudaArch 89
-```
-
-- La primera compilación tarda de 30 a 60 minutos y las incrementales, pocos minutos.
-- La extensión queda en `build/release/extension/decide_amox/decide_amox.duckdb_extension`. Se carga con el DuckDB CLI **2.0.0** iniciado con `duckdb -unsigned`.
-
-Pruebas, desde la raíz del repo y con `-unsigned`:
-- `test/parity/prompt_parity.sql`: los 226 prompts deben salir idénticos.
-- `test/decide_clause_demo.sql`: demo de `DECIDE`.
-- `test/parity/e2e_0.8b.sql` + `compare_0.8b.sql`: paridad de probabilidades con el harness. Necesita `eval/results.duckdb`, que no está en git; se genera con `eval/run_eval.py`.
-- `test/sql/*.test` (sqllogictest): todavía **no** se ejecutan, porque el build tiene `BUILD_UNITTESTS=FALSE`.
-
-Los modelos se descargan solos a `~/.duckdb/decide_amox/models`. También se puede usar `SET amox_model_dir` o `SELECT amox_download('onejev-4b')`.
+- La extensión se llama `decide_amox`, porque `decide` ya existe en *community*.
+- Todas las funciones y ajustes SQL usan el prefijo `amox_`: `amox_choose`, `amox_yes_no`, `amox_models`, `amox_download`, `amox_stats`, `amox_prompt`, `amox_state`, `amox_tokenize`, `amox_version`, `amox_clear_cache`, `SET amox_*`.
+- La cláusula `DECIDE` se mantiene, con reglas PEG `AmoxDecide*` y las formas de función `amox_choose(q AMONG … GIVEN …)` y `amox_yes_no(q GIVEN …)`.
+- El código C++ conserva los nombres de archivo `decide_*.cpp`, el namespace `decide::` y las opciones CMake `DECIDE_*`.
 
 ## Trampas conocidas (no repetir)
 
-- **Versión exacta.** El build usa `-DDUCKDB_EXPLICIT_VERSION=v2.0.0` y `-DDUCKDB_CAPABILITIES="httplib loadable_extensions"`. Con un `git describe` tipo `v2.0.0-0-g…` la extensión no casa con el CLI oficial y `INSTALL httpfs` apunta a un repositorio local.
+- **Versión exacta.** El build usa `-DDUCKDB_EXPLICIT_VERSION=v2.0.0` y `-DDUCKDB_CAPABILITIES="httplib loadable_extensions"`. Con un `git describe` tipo `v2.0.0-0-g…` la extensión no casa con el CLI oficial e `INSTALL httpfs` apunta a un repositorio local.
 - **DuckDB 2.0: toda función escalar que pueda lanzar errores necesita `SetFallible()`.** Sin eso, un error normal sale como `INTERNAL Error`.
-- **DuckDB 2.0, otros cambios de API:**
+- **Otros cambios de API en DuckDB 2.0:**
   - Accesores de vectores de solo lectura por defecto: `FlatVector::GetDataMutable`, `ValidityMutable`, `ListVector::GetChildMutable`.
   - Las funciones dentro de un `FunctionSet` son inmutables: fija `SetVolatile`/`SetFallible` antes de `AddFunction`.
   - Los binds de tablas usan `vector<Identifier>`.
-- **llama.cpp b12521:** `llama_batch_init`/`llama_decode` están obsoletas; se usa `llama_batch_ext_*` + `llama_process`. El GGUF de OneJev declara una capa MTP (`nextn_predict_layers=1`) que las versiones viejas, como llama‑cpp‑python 0.3.36, no cargan.
-- **CUDA 13 no soporta Pascal** (GTX 10xx, Quadro P). Para esas GPU: CUDA 12.x y `-CudaArch 61`.
-- **No cambies el orden del prompt.** Poner la pregunta antes del texto (para cachearla) bajó el 0.8B de 85.8 % a 45.1 %.
-- **La gramática `DECIDE` se activa a partir de la consulta siguiente al `LOAD`.** En el CLI, `LOAD` y `DECIDE` no pueden ir en la misma cadena `-c`; usa `-cmd "LOAD …"`.
-- La CPU de la máquina donde se desarrolló (i3 + Quadro P600) no es representativa. **Las velocidades se miden en el equipo de destino.**
+- **llama.cpp b12521:**
+  - Usa `llama_batch_ext_*` + `llama_process`; `llama_batch_init`/`llama_decode` están obsoletas.
+  - El GGUF de OneJev declara una capa MTP que llama.cpp antiguo no carga.
+  - Los objetivos estáticos (`llama ggml ggml-base ggml-cpu` y, con CUDA, `ggml-cuda`) deben estar en `install(EXPORT DuckDBExports)`.
+- **`DECIDE_NATIVE` es OFF por defecto** para que los binarios del CI sean portables. El script local lo activa salvo con `-Portable`.
+- **CUDA 13 no soporta Pascal.** El release usa CUDA 12.4 con `61;75;86;89`.
+- **No cambies el orden del prompt.** Poner la pregunta antes del texto bajó el 0.8B de 85.8 % a 45.1 %.
+- En `src/decide_grammar.cpp`, el literal `"decide"` de `TransformDecideTableRef` es la palabra clave leída como alias, no el nombre de la extensión.
+- **`DECIDE` se activa en la consulta siguiente al `LOAD`.** En el CLI usa `-cmd "LOAD …"`, no la misma cadena `-c`.
+- **Las pruebas `test/sql/*.test` nunca deben descargar modelos:** usan `SET amox_auto_download = false`.
+- **Velocidad:** la máquina donde se desarrolló (i3 + Quadro P600) no es representativa. Las velocidades se miden en el equipo de destino.
 
-## Instalación sin internet
+## Estado y siguientes pasos
 
-En la laptop del trabajo del usuario es difícil descargar de Hugging Face. El usuario reparte los modelos y la extensión por Drive a sus compañeros; la guía completa está en el README, sección "Instalación sin internet".
-
-- Los GGUF no se compilan: se copian a `<dir>/<modelo>/<archivo>.gguf`. Se usan con `SET amox_auto_download = false` y `SET amox_model_dir`, y el SHA‑256 se verifica en el destino.
-- Para repartir la extensión, compilar con `-Portable` y con todas las `-CudaArch` necesarias. Hay que comprobar qué DLL de CUDA exige el `.duckdb_extension` en un equipo sin CUDA Toolkit (por ejemplo, con `dumpbin /dependents`) y documentarlo.
-- Configuración persistente en `~/.duckdbrc`.
-
-## Nombre y publicación
-
-- **Nombre:** la extensión se llama **`decide_amox`**, porque `decide` ya existe en *community extensions* (gzheng92). Todas las funciones y ajustes SQL llevan el prefijo **`amox_`** (`amox_choose`, `amox_yes_no`, `amox_models`, `SET amox_model`…), para no chocar con `decide_onnx` ni con `decide`.
-  - La cláusula `DECIDE` se mantiene, con reglas PEG propias (`AmoxDecide*`) y formas de función `amox_choose(q AMONG … GIVEN …)` y `amox_yes_no(q GIVEN …)`.
-  - En `src/decide_grammar.cpp`, el literal `"decide"` de `TransformDecideTableRef` es la **palabra clave leída como alias**. No es el nombre de la extensión: no lo renombres.
-- **Repo:** https://github.com/DSandovalFlavio/desision_model_extension_duckdb
-- **Plan de publicación (pendiente):**
-  1. Workflow `.github/workflows/MainDistributionPipeline.yml` con `extension-ci-tools` `v2.0-cyanoptera` y `duckdb_version: v2.0.0`.
-     - Excluir `wasm_mvp;wasm_eh;wasm_threads;windows_amd64_mingw;linux_amd64_musl`.
-     - El build del CI debe ser portable: `DECIDE_NATIVE` ya es OFF por defecto en CMake y el script local pasa ON.
-  2. PR a `duckdb/community-extensions` con `extensions/decide_amox/description.yml`. El build firmado será **solo CPU** en Windows y Linux (el CI de DuckDB no tiene CUDA) y usará Metal en macOS.
-  3. Workflow propio de **GitHub Release** que compile la variante **CUDA** para Windows (instala el CUDA Toolkit en el runner) y adjunte el `.duckdb_extension` y las DLL de CUDA. Esa variante no la firma DuckDB, así que se carga con `-unsigned`.
-
-## Siguiente paso en la laptop del usuario
-
-Equipo: i9‑13900H, 32 GB, **RTX 2000 Ada Laptop de 8 GB** (`sm_89`, 35 W) y driver 596.71 con CUDA 13.2.
-
-1. Instalar VS 2022 Build Tools (C++), CUDA Toolkit 13.x y DuckDB CLI 2.0.0.
-2. Compilar con `-Cuda -CudaArch 89`. Esta compilación **nunca se ha probado**; si falla, corregir aquí: CMake de llama.cpp con `GGML_CUDA`, la exportación de los objetivos `ggml-cuda` en `CMakeLists.txt` y las arquitecturas.
-3. Verificar que `SELECT amox_version()` lista `CUDA` en los backends.
-4. Medir en GPU con el set de evaluación (`test/parity/e2e_0.8b.sql`, adaptado al 4B y al 9B) y anotar en `PLAN.md` los tokens/s de `amox_stats()`. Ajustar `amox_parallel` y `amox_batch_tokens`.
-5. Pendientes de rendimiento en `PLAN.md`: prefijo compartido con `llama_memory_seq_cp` (verificar que funcione con la memoria recurrente de Qwen3.5) y tokenizar las partes fijas una sola vez.
+- **Verificado en local:** Windows x64 con el DuckDB 2.0.0 oficial (CPU), paridad de prompts 226/226, paridad de predicciones, `DECIDE`, descarga y caché.
+- **Pendiente de verificar en el CI:** builds de Linux y macOS, `test/sql/*.test` con el runner y la variante `cuda12`. Revisa los runs de Actions antes de dar algo por hecho.
+- **Equipos del usuario:**
+  - Laptop: i9‑13900H, 32 GB, RTX 2000 Ada 8 GB (`sm_89`), driver con CUDA 13.2. Usa el zip `cuda12` del release.
+  - PC del hermano: GTX 1050 Ti 4 GB (`sm_61`). Mismo zip, con el 0.8B o el 4B y `amox_parallel` bajo.
+- **Pendientes:**
+  - Medir tokens/s en GPU real y ajustar `amox_parallel` y `amox_batch_tokens`.
+  - Enviar el PR a Community Extensions ([docs/PUBLISHING.md](docs/PUBLISHING.md)).
+  - Optimizaciones de [docs/DESIGN.md](docs/DESIGN.md): prefijo compartido con `llama_memory_seq_cp` y tokenizar una vez las partes fijas.

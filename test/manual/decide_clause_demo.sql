@@ -1,5 +1,5 @@
 -- Demo de la cláusula DECIDE. Desde la raíz del repo:
---   build/release/duckdb.exe -unsigned -c ".read test/decide_clause_demo.sql"
+--   build/release/duckdb.exe -unsigned -c ".read test/manual/decide_clause_demo.sql"
 LOAD 'build/release/extension/decide_amox/decide_amox.duckdb_extension';
 SET amox_model_dir = 'models';
 SET amox_model = 'onejev-0.8b';
