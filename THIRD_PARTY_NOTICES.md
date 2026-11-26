@@ -23,4 +23,4 @@ El formato de prompt `qev-labels-v2` (src/decide_prompt.cpp) y la lectura por le
 
 ## NVIDIA CUDA runtime (zips `cuda12` de los Releases)
 
-Los zips `cuda12` incluyen `cudart64_12.dll`, `cublas64_12.dll` y `cublasLt64_12.dll`, distribuidos bajo el [NVIDIA CUDA Toolkit EULA](https://docs.nvidia.com/cuda/eula/) (componentes redistribuibles, Attachment A). No forman parte del código de este repositorio.
+Los zips `cuda12` incluyen `cublas64_12.dll` y `cublasLt64_12.dll`, y la extensión enlaza estáticamente el runtime de CUDA (`cudart_static`), distribuidos bajo el [NVIDIA CUDA Toolkit EULA](https://docs.nvidia.com/cuda/eula/) (componentes redistribuibles, Attachment A). No forman parte del código de este repositorio.

@@ -7,7 +7,7 @@ Nada de esto requiere compilar: los modelos `.gguf` son archivos listos para usa
 ```
 decide_amox/
   decide_amox.duckdb_extension          <- del zip del release (cuda12 o cpu)
-  cudart64_12.dll  cublas64_12.dll  cublasLt64_12.dll   <- solo en la variante cuda12
+  cublas64_12.dll  cublasLt64_12.dll   <- solo en la variante cuda12
   modelos/
     LEEME.txt                           <- "OneJev1.6 (OmniJev), Apache-2.0" + enlace a la licencia
     onejev-0.8b/OneJev1.6-0.8B.Q8_0.gguf
@@ -22,7 +22,7 @@ decide_amox/
 
 1. Instala el [DuckDB CLI 2.0.1](https://github.com/duckdb/duckdb/releases/tag/v2.0.1).
 2. Copia la carpeta a disco local, por ejemplo `C:\decide_amox`.
-3. Con la variante `cuda12`, deja las tres DLL en la misma carpeta que `decide_amox.duckdb_extension` (la extensión las busca ahí).
+3. Con la variante `cuda12`, deja las dos DLL en la misma carpeta que `decide_amox.duckdb_extension` (la extensión las busca ahí).
 4. Crea `C:\Users\<usuario>\.duckdbrc`:
    ```sql
    LOAD 'C:/decide_amox/decide_amox.duckdb_extension';

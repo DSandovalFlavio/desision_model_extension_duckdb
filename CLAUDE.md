@@ -41,7 +41,8 @@ El usuario escribe en español; responde en español. El uso es **comercial**: s
   - Los objetivos estáticos (`llama ggml ggml-base ggml-cpu` y, con CUDA, `ggml-cuda`) deben estar en `install(EXPORT DuckDBExports)`.
 - **`DECIDE_NATIVE` es OFF por defecto** para que los binarios del CI sean portables. El script local lo activa salvo con `-Portable`.
 - **DLL de CUDA en Windows.** DuckDB carga las extensiones con `LoadLibraryW`, y Windows no busca las DLL dependientes junto a la extensión.
-  - Por eso el `.duckdb_extension` CUDA carga en diferido (`/DELAYLOAD`) `nvcuda`, `cudart64_NN`, `cublasLt64_NN` y `cublas64_NN`.
+  - Por eso el `.duckdb_extension` CUDA carga en diferido (`/DELAYLOAD`) solo `nvcuda`, `cublasLt64_NN` y `cublas64_NN`.
+  - `cudart` va **estático** (`GGML_STATIC=ON` en Windows con CUDA): nvcc genera inicializadores estáticos que llaman a cudart al cargar la DLL. Con `cudart` en carga diferida, `LOAD` falla con "DLL initialization routine failed".
   - `src/decide_dll.cpp` las precarga desde la carpeta de la extensión (y si no, con la búsqueda normal) al inicio de `LoadInternal`. Si falta alguna, `LOAD` falla con un mensaje claro.
   - No llames a nada de CUDA antes de esa precarga.
 - **Cambio de versión de DuckDB:** cada versión, incluidas las de correcciones, exige un release nuevo. Ver "Pasar a una nueva versión de DuckDB" en `docs/BUILDING.md`.

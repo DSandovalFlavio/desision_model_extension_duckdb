@@ -31,10 +31,10 @@ Necesitas el [DuckDB CLI **2.0.1**](https://github.com/duckdb/duckdb/releases/ta
 
 ### Windows con GPU NVIDIA (recomendado)
 
-1. Descarga `decide_amox-<versión>-windows_amd64-cuda12.zip` (~750 MB, porque incluye los kernels de cuatro generaciones de GPU) desde [Releases](https://github.com/DSandovalFlavio/desision_model_extension_duckdb/releases).
+1. Descarga `decide_amox-<versión>-windows_amd64-cuda12.zip` (~750 MB, porque incluye los kernels de cuatro generaciones de GPU y cuBLAS) desde [Releases](https://github.com/DSandovalFlavio/desision_model_extension_duckdb/releases).
    - Funciona con GTX 10xx, RTX 20xx, 30xx y 40xx, y RTX Ada.
    - Necesitas el driver de NVIDIA actualizado; **no** hace falta instalar el CUDA Toolkit.
-2. Descomprime el zip y deja juntos `decide_amox.duckdb_extension` y las tres DLL (`cudart64_12`, `cublas64_12`, `cublasLt64_12`): la extensión las busca en su propia carpeta. Si usas `INSTALL` con el archivo, copia las DLL a la carpeta donde DuckDB la instala (`~/.duckdb/extensions/v2.0.1/windows_amd64/`).
+2. Descomprime el zip y deja juntos `decide_amox.duckdb_extension` y las dos DLL de cuBLAS (`cublas64_12`, `cublasLt64_12`): la extensión las busca en su propia carpeta. Si usas `INSTALL` con el archivo, copia las DLL a la carpeta donde DuckDB la instala (`~/.duckdb/extensions/v2.0.1/windows_amd64/`).
 3. Abre DuckDB permitiendo extensiones sin firma y cárgala:
    ```powershell
    duckdb -unsigned

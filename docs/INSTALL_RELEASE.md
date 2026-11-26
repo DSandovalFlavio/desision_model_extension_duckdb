@@ -1,7 +1,7 @@
 # decide_amox: instalación rápida (Windows)
 
 1. **DuckDB:** instala el DuckDB CLI **2.0.1** desde https://github.com/duckdb/duckdb/releases/tag/v2.0.1. Otras versiones no cargan esta extensión.
-2. **Solo en el zip `cuda12`:** deja `cudart64_12.dll`, `cublas64_12.dll` y `cublasLt64_12.dll` en la misma carpeta que `decide_amox.duckdb_extension`; la extensión las busca ahí. Si haces `INSTALL` del archivo, copia también las DLL a la carpeta donde DuckDB la instala (`%USERPROFILE%\.duckdb\extensions\v2.0.1\windows_amd64\`). Necesitas el driver de NVIDIA actualizado; no hace falta el CUDA Toolkit.
+2. **Solo en el zip `cuda12`:** deja `cublas64_12.dll` y `cublasLt64_12.dll` en la misma carpeta que `decide_amox.duckdb_extension`; la extensión las busca ahí. Si haces `INSTALL` del archivo, copia también las DLL a la carpeta donde DuckDB la instala (`%USERPROFILE%\.duckdb\extensions\v2.0.1\windows_amd64\`). Necesitas el driver de NVIDIA actualizado; no hace falta el CUDA Toolkit.
 3. **Carga la extensión:**
    ```
    duckdb -unsigned
