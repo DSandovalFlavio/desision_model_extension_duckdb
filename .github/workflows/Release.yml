@@ -76,7 +76,9 @@ jobs:
             }
           }
           Compress-Archive -Path "$out/*" -DestinationPath "dist/$name.zip"
-          (Get-FileHash "dist/$name.zip" -Algorithm SHA256).Hash.ToLower() + "  $name.zip" | Out-File -Encoding ascii "dist/$name.zip.sha256"
+          # LF line ending, so `sha256sum -c` works on Linux/macOS too
+          $hash = (Get-FileHash "dist/$name.zip" -Algorithm SHA256).Hash.ToLower()
+          [IO.File]::WriteAllText("$PWD/dist/$name.zip.sha256", "$hash  $name.zip`n")
           Get-ChildItem dist
 
       - name: Upload to the release
