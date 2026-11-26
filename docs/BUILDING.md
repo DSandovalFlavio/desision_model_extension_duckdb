@@ -50,7 +50,7 @@ powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1 -Cuda -CudaAr
 
 - **Tiempo:** la primera compilación tarda de 30 a 60 minutos (DuckDB + llama.cpp); las incrementales, pocos minutos.
 - **Salida:** `build/release/extension/decide_amox/decide_amox.duckdb_extension`.
-- **Versión:** el script fija la versión exacta `v2.0.0` (`DUCKDB_EXPLICIT_VERSION`) y quita el repositorio local de extensiones (`DUCKDB_CAPABILITIES`). Así el binario carga en el DuckDB 2.0.0 oficial e instala `httpfs` del repositorio oficial.
+- **Versión:** el script fija la versión exacta `v2.0.1` (`DUCKDB_EXPLICIT_VERSION`) y quita el repositorio local de extensiones (`DUCKDB_CAPABILITIES`). Así el binario carga en el DuckDB 2.0.1 oficial e instala `httpfs` del repositorio oficial.
 
 ## Compilar en local (Linux / macOS)
 
@@ -85,7 +85,7 @@ Para CUDA en Linux: `EXT_FLAGS="-DDECIDE_WITH_CUDA=ON" GEN=ninja make release`. 
 | `src/decide_store.cpp` | Descarga con `httpfs`, SHA‑256, archivo temporal + rename y sello `.verified` |
 | `src/decide_models.cpp` | Los 3 modelos con URL, tamaño y SHA‑256 fijados |
 | `third_party/llama.cpp` | Copia **incluida** (no es un submódulo) de llama.cpp b12521: solo CMake, `include/`, `src/`, `vendor/` y los backends CPU, BLAS, Metal y CUDA. Ver `VENDORED.md` y la sección "Actualizar llama.cpp" |
-| `duckdb`, `extension-ci-tools` | Submódulos fijados: v2.0.0 y v2.0-cyanoptera |
+| `duckdb`, `extension-ci-tools` | Submódulos fijados: v2.0.1 y v2.0-cyanoptera |
 
 ## Actualizar llama.cpp
 
@@ -101,3 +101,20 @@ python scripts/vendor_llama_cpp.py /tmp/llama.cpp <tag>
 
 Después, actualiza `DECIDE_LLAMA_BUILD` en `CMakeLists.txt`, recompila y repite las pruebas de paridad (`test/parity/`).
 
+
+## Pasar a una nueva versión de DuckDB
+
+Las extensiones C++ solo cargan en la versión **exacta** de DuckDB para la que se compilaron. Con cada versión nueva, incluidas las de correcciones como 2.0.0 → 2.0.1, hay que publicar una versión nueva de decide_amox:
+
+1. **Submódulos:**
+   - `git -C duckdb fetch --depth 1 origin refs/tags/vX.Y.Z` y después `git -C duckdb checkout FETCH_HEAD`.
+   - `extension-ci-tools`: la rama de esa versión, por ejemplo `v2.0-cyanoptera`.
+2. **`vX.Y.Z` en:**
+   - `scripts/build_windows.ps1` (`DUCKDB_EXPLICIT_VERSION`);
+   - `.github/workflows/MainDistributionPipeline.yml` (`duckdb_version`);
+   - los enlaces de descarga del CLI en `README.md`, `docs/OFFLINE.md` y `docs/INSTALL_RELEASE.md`.
+3. **Versión de la extensión:** sube `EXTENSION_VERSION` en `extension_config.cmake` y añade la entrada en `CHANGELOG.md`.
+4. **Compilación y pruebas:** compila en local, ejecuta `test/parity/prompt_parity.sql` con el CLI nuevo y espera el CI en verde.
+5. **Publicación:** publica el Release (ver arriba).
+
+Si la extensión está en *Community Extensions*, DuckDB la recompila solo en cada versión nueva y estos pasos solo hacen falta para los zips de GitHub.

@@ -18,7 +18,7 @@ LOAD decide_amox;
 extension:
   name: decide_amox
   description: Classify text in SQL with local OneJev1.6 decision models (0.8B/4B/9B) through llama.cpp - choices, yes/no probabilities and a DECIDE clause, no external API
-  version: '0.1.0'
+  version: '0.1.1'
   language: C++
   build: cmake
   license: MIT

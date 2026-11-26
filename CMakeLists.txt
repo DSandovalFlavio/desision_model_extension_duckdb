@@ -50,7 +50,7 @@ add_subdirectory(${LLAMA_DIR} ${CMAKE_CURRENT_BINARY_DIR}/llama.cpp EXCLUDE_FROM
 # ---------------------------------------------------------------------------------------------------------------
 include_directories(src/include ${LLAMA_DIR}/include ${LLAMA_DIR}/ggml/include)
 
-set(EXTENSION_SOURCES src/decide_amox_extension.cpp src/decide_models.cpp src/decide_prompt.cpp src/decide_runtime.cpp src/decide_grammar.cpp src/decide_store.cpp)
+set(EXTENSION_SOURCES src/decide_amox_extension.cpp src/decide_models.cpp src/decide_prompt.cpp src/decide_runtime.cpp src/decide_grammar.cpp src/decide_store.cpp src/decide_dll.cpp)
 
 build_static_extension(${TARGET_NAME} ${EXTENSION_SOURCES})
 build_loadable_extension(${TARGET_NAME} " " ${EXTENSION_SOURCES})
@@ -58,6 +58,28 @@ build_loadable_extension(${TARGET_NAME} " " ${EXTENSION_SOURCES})
 foreach(T ${EXTENSION_NAME} ${LOADABLE_EXTENSION_NAME})
   target_link_libraries(${T} llama ggml)
   target_compile_definitions(${T} PRIVATE DECIDE_LLAMA_BUILD="${DECIDE_LLAMA_BUILD}")
+endforeach()
+
+# Windows + CUDA: DuckDB loads extensions with LoadLibraryW, and Windows does not look for an extension's dependent
+# DLLs next to the extension file. The CUDA DLLs are therefore delay-loaded, and the extension preloads them from its
+# own folder (then the normal search: the .exe folder, System32, PATH) before ggml touches CUDA, failing with a clear
+# message when one is missing. See DECIDE_CUDA_DLLS in src/decide_amox_extension.cpp.
+set(DECIDE_CUDA_DLLS "")
+if(WIN32 AND DECIDE_WITH_CUDA)
+  find_package(CUDAToolkit REQUIRED)
+  set(DECIDE_CUDA_DLLS
+      "cudart64_${CUDAToolkit_VERSION_MAJOR}.dll;cublasLt64_${CUDAToolkit_VERSION_MAJOR}.dll;cublas64_${CUDAToolkit_VERSION_MAJOR}.dll")
+  set(DECIDE_DELAYLOAD nvcuda.dll ${DECIDE_CUDA_DLLS})
+  foreach(DLL ${DECIDE_DELAYLOAD})
+    target_link_options(${LOADABLE_EXTENSION_NAME} PRIVATE "/DELAYLOAD:${DLL}")
+  endforeach()
+  target_link_libraries(${LOADABLE_EXTENSION_NAME} delayimp)
+  message(STATUS "decide_amox: delay-loading ${DECIDE_DELAYLOAD}")
+endif()
+# Passed to C++ as a comma-separated list (a ';' would split the compile definition).
+string(REPLACE ";" "," DECIDE_CUDA_DLLS_CSV "${DECIDE_CUDA_DLLS}")
+foreach(T ${EXTENSION_NAME} ${LOADABLE_EXTENSION_NAME})
+  target_compile_definitions(${T} PRIVATE DECIDE_CUDA_DLLS="${DECIDE_CUDA_DLLS_CSV}")
 endforeach()
 
 # DuckDB exports every static extension target; the static llama.cpp libraries it links must be in the same set.

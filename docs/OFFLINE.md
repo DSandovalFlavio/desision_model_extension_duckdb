@@ -20,9 +20,9 @@ decide_amox/
 
 ## 2. En cada equipo
 
-1. Instala el [DuckDB CLI 2.0.0](https://github.com/duckdb/duckdb/releases/tag/v2.0.0).
+1. Instala el [DuckDB CLI 2.0.1](https://github.com/duckdb/duckdb/releases/tag/v2.0.1).
 2. Copia la carpeta a disco local, por ejemplo `C:\decide_amox`.
-3. Con la variante `cuda12`, copia las tres DLL junto a `duckdb.exe`, o añade `C:\decide_amox` al `PATH`.
+3. Con la variante `cuda12`, deja las tres DLL en la misma carpeta que `decide_amox.duckdb_extension` (la extensión las busca ahí).
 4. Crea `C:\Users\<usuario>\.duckdbrc`:
    ```sql
    LOAD 'C:/decide_amox/decide_amox.duckdb_extension';

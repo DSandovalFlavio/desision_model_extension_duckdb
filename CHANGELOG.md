@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.1 (2026-11-25)
+
+- **DuckDB 2.0.1:** la extensión se compila para DuckDB v2.0.1, la versión de correcciones publicada el 20‑nov‑2026. Igual que todas las extensiones C++, solo carga en esa versión exacta; para DuckDB 2.0.0 usa decide_amox 0.1.0.
+- **Windows con CUDA, las DLL junto a la extensión:**
+  - Basta con dejar `cudart64_12.dll`, `cublas64_12.dll` y `cublasLt64_12.dll` en la misma carpeta que `decide_amox.duckdb_extension`. Ya no hace falta ponerlas junto a `duckdb.exe` ni en el `PATH`.
+  - Antes, al hacer `INSTALL` o al cargarla desde otra aplicación, Windows fallaba con "No se puede encontrar el módulo especificado".
+  - La extensión carga ahora esas DLL en diferido y las busca primero en su propia carpeta.
+  - Si falta alguna, `LOAD` dice cuál y qué hacer.
+
 ## 0.1.0 (2026-11-19)
 
 Primera versión.

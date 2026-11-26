@@ -2,6 +2,7 @@
 
 #include "decide_amox_extension.hpp"
 
+#include "decide_dll.hpp"
 #include "decide_models.hpp"
 #include "decide_grammar.hpp"
 #include "decide_runtime.hpp"
@@ -658,6 +659,12 @@ static void ModelsFun(ClientContext &context, TableFunctionInput &input, DataChu
 // ---------------------------------------------------------------------------------------------------------------
 
 static void LoadInternal(ExtensionLoader &loader) {
+	// CUDA builds on Windows: load the delay-loaded CUDA DLLs before anything can touch CUDA, so a missing DLL is a
+	// clear LOAD error instead of a crash or Windows' "the specified module could not be found".
+	auto cuda_error = decide::PreloadCudaLibraries();
+	if (!cuda_error.empty()) {
+		throw IOException("decide_amox: %s", cuda_error);
+	}
 	auto &config = DBConfig::GetConfig(loader.GetDatabaseInstance());
 	config.AddExtensionOption(SETTING_MODEL,
 	                          "Decision model used by the decide_amox functions: " + decide::ModelIdList(),

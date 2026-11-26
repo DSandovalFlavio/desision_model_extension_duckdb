@@ -1,6 +1,6 @@
 # decide_amox: guía para agentes
 
-Extensión de **DuckDB 2.0.0** (C++17) que clasifica texto desde SQL con modelos de decisión **OneJev1.6** (0.8B / **4B por defecto** / 9B, GGUF, Apache‑2.0) sobre **llama.cpp b12521**, enlazado estáticamente. Una pasada por decisión: la probabilidad es el softmax de los logits de las letras A, B, C… del prompt `qev-labels-v2`.
+Extensión de **DuckDB 2.0.1** (C++17; la v0.1.0 era para 2.0.0) que clasifica texto desde SQL con modelos de decisión **OneJev1.6** (0.8B / **4B por defecto** / 9B, GGUF, Apache‑2.0) sobre **llama.cpp b12521**, enlazado estáticamente. Una pasada por decisión: la probabilidad es el softmax de los logits de las letras A, B, C… del prompt `qev-labels-v2`.
 
 El usuario escribe en español; responde en español. El uso es **comercial**: solo modelos con licencia permisiva (StartLux y openjev son CC BY‑NC y están descartados).
 
@@ -28,7 +28,7 @@ El usuario escribe en español; responde en español. El uso es **comercial**: s
 
 ## Trampas conocidas (no repetir)
 
-- **Versión exacta.** El build usa `-DDUCKDB_EXPLICIT_VERSION=v2.0.0` y `-DDUCKDB_CAPABILITIES="httplib loadable_extensions"`. Con un `git describe` tipo `v2.0.0-0-g…` la extensión no casa con el CLI oficial e `INSTALL httpfs` apunta a un repositorio local.
+- **Versión exacta.** El build usa `-DDUCKDB_EXPLICIT_VERSION=v2.0.1` y `-DDUCKDB_CAPABILITIES="httplib loadable_extensions"`. Con un `git describe` tipo `v2.0.0-0-g…` la extensión no casa con el CLI oficial e `INSTALL httpfs` apunta a un repositorio local.
 - **DuckDB 2.0: toda función escalar que pueda lanzar errores necesita `SetFallible()`.** Sin eso, un error normal sale como `INTERNAL Error`.
 - **Otros cambios de API en DuckDB 2.0:**
   - Accesores de vectores de solo lectura por defecto: `FlatVector::GetDataMutable`, `ValidityMutable`, `ListVector::GetChildMutable`.
@@ -40,6 +40,11 @@ El usuario escribe en español; responde en español. El uso es **comercial**: s
   - El GGUF de OneJev declara una capa MTP que llama.cpp antiguo no carga.
   - Los objetivos estáticos (`llama ggml ggml-base ggml-cpu` y, con CUDA, `ggml-cuda`) deben estar en `install(EXPORT DuckDBExports)`.
 - **`DECIDE_NATIVE` es OFF por defecto** para que los binarios del CI sean portables. El script local lo activa salvo con `-Portable`.
+- **DLL de CUDA en Windows.** DuckDB carga las extensiones con `LoadLibraryW`, y Windows no busca las DLL dependientes junto a la extensión.
+  - Por eso el `.duckdb_extension` CUDA carga en diferido (`/DELAYLOAD`) `nvcuda`, `cudart64_NN`, `cublasLt64_NN` y `cublas64_NN`.
+  - `src/decide_dll.cpp` las precarga desde la carpeta de la extensión (y si no, con la búsqueda normal) al inicio de `LoadInternal`. Si falta alguna, `LOAD` falla con un mensaje claro.
+  - No llames a nada de CUDA antes de esa precarga.
+- **Cambio de versión de DuckDB:** cada versión, incluidas las de correcciones, exige un release nuevo. Ver "Pasar a una nueva versión de DuckDB" en `docs/BUILDING.md`.
 - **CUDA 13 no soporta Pascal.** El release usa CUDA 12.4 con `61;75;86;89`.
 - **No cambies el orden del prompt.** Poner la pregunta antes del texto bajó el 0.8B de 85.8 % a 45.1 %.
 - En `src/decide_grammar.cpp`, el literal `"decide"` de `TransformDecideTableRef` es la palabra clave leída como alias, no el nombre de la extensión.

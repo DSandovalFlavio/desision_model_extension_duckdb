@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/DSandovalFlavio/desision_model_extension_duckdb/actions/workflows/MainDistributionPipeline.yml/badge.svg)](https://github.com/DSandovalFlavio/desision_model_extension_duckdb/actions/workflows/MainDistributionPipeline.yml)
 [![Release](https://github.com/DSandovalFlavio/desision_model_extension_duckdb/actions/workflows/Release.yml/badge.svg)](https://github.com/DSandovalFlavio/desision_model_extension_duckdb/actions/workflows/Release.yml)
-![DuckDB](https://img.shields.io/badge/DuckDB-2.0.0-yellow)
+![DuckDB](https://img.shields.io/badge/DuckDB-2.0.1-yellow)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 **Clasifica texto desde SQL, en local y en español**, con modelos de decisión. Una extensión de DuckDB 2.0 para etiquetar anuncios, keywords, comentarios o tickets sin enviar datos a ninguna API.
@@ -27,14 +27,14 @@ FROM comentarios DECIDE (
 
 ## Instalación
 
-Necesitas el [DuckDB CLI **2.0.0**](https://github.com/duckdb/duckdb/releases/tag/v2.0.0). La extensión solo carga en esa versión exacta. No hace falta compilar nada.
+Necesitas el [DuckDB CLI **2.0.1**](https://github.com/duckdb/duckdb/releases/tag/v2.0.1). La extensión solo carga en esa versión exacta. No hace falta compilar nada.
 
 ### Windows con GPU NVIDIA (recomendado)
 
 1. Descarga `decide_amox-<versión>-windows_amd64-cuda12.zip` (~750 MB, porque incluye los kernels de cuatro generaciones de GPU) desde [Releases](https://github.com/DSandovalFlavio/desision_model_extension_duckdb/releases).
    - Funciona con GTX 10xx, RTX 20xx, 30xx y 40xx, y RTX Ada.
    - Necesitas el driver de NVIDIA actualizado; **no** hace falta instalar el CUDA Toolkit.
-2. Descomprime el zip y copia los tres `*.dll` (`cudart64_12`, `cublas64_12`, `cublasLt64_12`) **en la misma carpeta que `duckdb.exe`**. También puedes añadir la carpeta del zip al `PATH`.
+2. Descomprime el zip y deja juntos `decide_amox.duckdb_extension` y las tres DLL (`cudart64_12`, `cublas64_12`, `cublasLt64_12`): la extensión las busca en su propia carpeta. Si usas `INSTALL` con el archivo, copia las DLL a la carpeta donde DuckDB la instala (`~/.duckdb/extensions/v2.0.1/windows_amd64/`).
 3. Abre DuckDB permitiendo extensiones sin firma y cárgala:
    ```powershell
    duckdb -unsigned
@@ -136,11 +136,11 @@ SELECT * FROM amox_models();                                   -- descargados, c
 
 ## Estado
 
-Versión **0.1.0**, la primera publicada.
+Versión **0.1.1** (para DuckDB 2.0.1). Para DuckDB 2.0.0 usa la 0.1.0. Cambios en [CHANGELOG.md](CHANGELOG.md).
 
 - **Comprobado:**
   - El CI compila y pasa las pruebas en Linux (amd64 y arm64), macOS (arm64) y Windows (amd64).
-  - El zip de Windows generado por el CI se probó con el DuckDB 2.0.0 oficial.
+  - El zip de Windows generado por el CI se probó con el DuckDB 2.0.1 oficial.
   - Hay paridad exacta frente a la implementación de referencia de OneJev: prompts idénticos y mismas predicciones.
 - **Estado actual de cada build:** en los badges de arriba.
 
