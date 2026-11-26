@@ -56,7 +56,15 @@ El usuario escribe en español; responde en español. El uso es **comercial**: s
 ## Estado y siguientes pasos
 
 - **Verificado en local:** Windows x64 con el DuckDB 2.0.0 oficial (CPU), paridad de prompts 226/226, paridad de predicciones, `DECIDE`, descarga y caché.
-- **Verificado en el CI (19‑nov‑2026):**
+- **v0.1.1 (26‑nov‑2026, DuckDB 2.0.1), publicada:**
+  - CI en verde en las 4 plataformas.
+  - El zip `cuda12` del build de GitHub se probó en GPU real (Quadro P600) con el DuckDB 2.0.1 oficial y `PATH` limpio:
+    - carga directa con las DLL solo junto a la extensión;
+    - `INSTALL` + DLL en `.duckdb/extensions/v2.0.1/windows_amd64/`;
+    - mensaje claro si falta una DLL (probado con un build CUDA local).
+  - DuckDB 2.0.0 rechaza el build de 2.0.1 con un mensaje que indica la versión.
+  - Para DuckDB 2.0.0 sigue publicada la v0.1.0.
+- **Verificado en el CI (19‑nov‑2026, v0.1.0):**
   - El *Main Extension Distribution Pipeline* compila y pasa los 3 `test/sql/*.test` en `linux_amd64`, `linux_arm64`, `osx_arm64` y `windows_amd64`.
   - Los zips `cpu` y `cuda12` de *Release* funcionan con el DuckDB 2.0.0 oficial.
   - `cuda12`, probado en una Quadro P600 (`sm_61`): `backends: CUDA, CPU`, 226 textos con el 0.8B en 72 s (793 tok/s) frente a 383 s en CPU, con los mismos aciertos y salida limpia del proceso.
