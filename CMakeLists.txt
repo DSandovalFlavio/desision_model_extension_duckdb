@@ -37,6 +37,12 @@ set(GGML_CUDA_NCCL OFF)
 # No OpenMP: on Windows it would make the extension depend on VCOMP140.DLL (Visual C++ redistributable), which the
 # release zips cannot assume. ggml then uses its own thread pool.
 set(GGML_OPENMP OFF)
+if(WIN32 AND DECIDE_WITH_CUDA)
+  # Link the CUDA runtime statically (cudart_static; cuBLAS stays a DLL, Windows has no static cuBLAS). nvcc emits
+  # static initializers that call the CUDA runtime to register the kernels while the extension DLL is being loaded,
+  # so cudart cannot be a delay-loaded DLL. On MSVC, GGML_STATIC changes nothing else.
+  set(GGML_STATIC ON)
+endif()
 if(NOT CMAKE_CUDA_ARCHITECTURES)
   # RTX 20xx/30xx/40xx laptops; override with -DCMAKE_CUDA_ARCHITECTURES=...
   set(CMAKE_CUDA_ARCHITECTURES "75;86;89")
@@ -61,14 +67,14 @@ foreach(T ${EXTENSION_NAME} ${LOADABLE_EXTENSION_NAME})
 endforeach()
 
 # Windows + CUDA: DuckDB loads extensions with LoadLibraryW, and Windows does not look for an extension's dependent
-# DLLs next to the extension file. The CUDA DLLs are therefore delay-loaded, and the extension preloads them from its
-# own folder (then the normal search: the .exe folder, System32, PATH) before ggml touches CUDA, failing with a clear
-# message when one is missing. See DECIDE_CUDA_DLLS in src/decide_amox_extension.cpp.
+# DLLs next to the extension file. The cuBLAS DLLs (only called at inference time) and nvcuda.dll (driver) are therefore
+# delay-loaded, and the extension preloads them from its own folder (then the normal search: the .exe folder,
+# System32, PATH) before ggml touches CUDA, failing with a clear message when one is missing. The CUDA runtime is
+# linked statically (GGML_STATIC above). See src/decide_dll.cpp.
 set(DECIDE_CUDA_DLLS "")
 if(WIN32 AND DECIDE_WITH_CUDA)
   find_package(CUDAToolkit REQUIRED)
-  set(DECIDE_CUDA_DLLS
-      "cudart64_${CUDAToolkit_VERSION_MAJOR}.dll;cublasLt64_${CUDAToolkit_VERSION_MAJOR}.dll;cublas64_${CUDAToolkit_VERSION_MAJOR}.dll")
+  set(DECIDE_CUDA_DLLS "cublasLt64_${CUDAToolkit_VERSION_MAJOR}.dll;cublas64_${CUDAToolkit_VERSION_MAJOR}.dll")
   set(DECIDE_DELAYLOAD nvcuda.dll ${DECIDE_CUDA_DLLS})
   foreach(DLL ${DECIDE_DELAYLOAD})
     target_link_options(${LOADABLE_EXTENSION_NAME} PRIVATE "/DELAYLOAD:${DLL}")

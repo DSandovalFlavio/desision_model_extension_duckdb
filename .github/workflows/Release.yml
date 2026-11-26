@@ -70,8 +70,8 @@ jobs:
           if ($dumpbin) { & $dumpbin.FullName /dependents $ext }
 
           if ("${{ matrix.variant }}" -eq "cuda12") {
-            # CUDA runtime + cuBLAS, redistributable under the NVIDIA CUDA EULA (Attachment A).
-            foreach ($dll in "cudart64_12.dll", "cublas64_12.dll", "cublasLt64_12.dll") {
+            # cuBLAS, redistributable under the NVIDIA CUDA EULA (Attachment A). The CUDA runtime is linked statically.
+            foreach ($dll in "cublas64_12.dll", "cublasLt64_12.dll") {
               Copy-Item (Join-Path $env:CUDA_PATH "bin/$dll") $out
             }
           }
