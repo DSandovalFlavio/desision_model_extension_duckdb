@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.1 (2026-11-25)
+## 0.1.1 (2026-11-26)
 
 - **DuckDB 2.0.1:** la extensión se compila para DuckDB v2.0.1, la versión de correcciones publicada el 20‑nov‑2026. Igual que todas las extensiones C++, solo carga en esa versión exacta; para DuckDB 2.0.0 usa decide_amox 0.1.0.
 - **Windows con CUDA, las DLL junto a la extensión:**
